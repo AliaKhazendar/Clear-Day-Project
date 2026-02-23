@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/magic_purple"
+    tools:context=".ui.activitys.SplashActivity">
+    <ImageView
+        android:id="@+id/splash_base_image"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:contentDescription="@string/splash_base_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/image_splash_base"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/splash_logo_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/splash_logo_image"
+        android:src="@drawable/image_splash_logo"
+        app:layout_constraintStart_toStartOf="@id/splash_base_image"
+        app:layout_constraintTop_toTopOf="@id/splash_base_image" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_splash_rectangle"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/splash_base_image">
+
+        <TextView
+            android:id="@+id/splash_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="43dp"
+            android:fontFamily="@font/poller_one"
+            android:text="@string/app_name"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/magic_purple"
+            android:textSize="46sp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/splash_slogan_main"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:text="@string/splash_slogan_main"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/teal_blue"
+            android:textSize="37sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16sp"/>
+
+        <TextView
+            android:id="@+id/splash_slogan_second"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/splash_slogan_second"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/light_gray"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/splash_start_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginHorizontal="40dp"
+            android:background="@drawable/shape_splash_start_button"
+            android:fontFamily="@font/roboto"
+            android:paddingHorizontal="50dp"
+            android:paddingVertical="15dp"
+            android:text="@string/splash_button_text"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">Clear Day Application</string>
+    <string name="app_name">Clear Day \n App</string>
+
+    <string name="splash_base_image">this base image</string>
+    <string name="splash_logo_image">logo_image</string>
+    <string name="splash_slogan_main">Building Better \n Workplaces </string>
+    <string name="splash_slogan_second">Create Your Project And GO!!</string>
+    <string name="splash_button_text">Start Now</string>
+
+    <string name="on_board_clear_day_app">Clear Day App</string>
+    <string name="on_board_message_one">Let\'s create a\n<b>spase</b> for your\nworkflows.</string>
+    <string name="on_board_message_two">Work more\n<b>Structured</b> and\nOrganized👌</string>
+    <string name="on_board_message_there">Manage your\n<b>Tasks</b> quickly for\nResults✌</string>
+    <string name="on_board_add_you_account">Add Your Account</string>
+
 </resources>
