@@ -9,6 +9,9 @@ android {
     compileSdk {
         version = release(36)
     }
+    buildFeatures {
+        viewBinding true
+    }
 
     defaultConfig {
         applicationId "com.example.cleardayapplication"
@@ -50,5 +53,9 @@ dependencies {
     implementation libs.firebase.auth
     // Firebase Database Cloud Store
     implementation libs.firebase.firestore
+
+    // onBoard
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation 'com.tbuonomo:dotsindicator:4.3'
 
 }
