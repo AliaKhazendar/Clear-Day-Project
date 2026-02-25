@@ -13,4 +13,19 @@
     <string name="on_board_message_there">Manage your\n<b>Tasks</b> quickly for\nResults✌</string>
     <string name="on_board_add_you_account">Add Your Account</string>
 
+    <string name="account_sing_in_title_or_button">Sing In</string>
+    <string name="account_sing_up_title_or_button">Sing Up</string>
+    <string name="account_sing_up_create_account">Create Account</string>
+    <string name="account_sing_in_welcome">Welcome Back</string>
+    <string name="account_sing_up_hint_to_all_info">Please Inter your Information and\ncreate your account</string>
+    <string name="account_sing_in_hint_to_all_info">Please Inter your email address\nand password for Login</string>
+    <string name="account_hint_user_name">Enter user name</string>
+    <string name="account_hint_email">Enter your Email</string>
+    <string name="account_hint_password">Enter your Password</string>
+    <string name="account_sing_up_with">Singup with</string>
+    <string name="account_sing_in_with">Singin with</string>
+    <string name="account_sing_up_have_an_account">Have an Account?</string>
+    <string name="account_sing_in_no_have">Not Register Yet?</string>
+
+
 </resources>
