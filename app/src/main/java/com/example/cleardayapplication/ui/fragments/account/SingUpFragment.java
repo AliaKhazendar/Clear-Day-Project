@@ -1,66 +1,84 @@
 package com.example.cleardayapplication.ui.fragments.account;
-
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.example.cleardayapplication.R;
+import androidx.fragment.app.Fragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SingUpFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.cleardayapplication.databinding.FragmentSingUpBinding;
+import com.example.cleardayapplication.ui.fragments.account.SingInFragment;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class SingUpFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public SingUpFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SingUpFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SingUpFragment newInstance(String param1, String param2) {
-        SingUpFragment fragment = new SingUpFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private FirebaseAuth mAuth;
+    private FragmentSingUpBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        mAuth = FirebaseAuth.getInstance(); // تهيئة Firebase Authentication
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sing_up, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // ربط ViewBinding
+        binding = FragmentSingUpBinding.inflate(inflater, container, false);
+
+        // إضافة حدث زر إنشاء الحساب
+        binding.accountSingUpButton.setOnClickListener(v -> {
+            String userName = binding.accountSingUpUserName.getText().toString();
+            String email = binding.accountSingUpEmail.getText().toString();
+            String password = binding.accountSingUpPassword.getText().toString();
+
+            // تحقق من الحقول
+            if (userName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
+            } else if (!email.contains("@")) {
+                Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
+            } else if (password.length() < 6) {
+                Toast.makeText(getContext(), "Password should be at least 6 characters", Toast.LENGTH_SHORT).show();
+            } else {
+                // إنشاء الحساب
+                createAccount(email, password);
+            }
+        });
+
+        // إضافة حدث زر تسجيل الدخول
+        binding.accountSingUpSingInButton.setOnClickListener(v -> {
+            // هنا يمكنك استخدام Intent للتنقل إلى شاشة تسجيل الدخول
+            Intent intent = new Intent(getContext(), SingInFragment.class); // تأكد من أن لديك Activity لتسجيل الدخول
+            startActivity(intent);
+        });
+
+        return binding.getRoot();
+    }
+
+    private void createAccount(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(getActivity(), task -> {
+                    if (task.isSuccessful()) {
+                        // إرسال رسالة تأكيد للبريد الإلكتروني بعد إنشاء الحساب
+                        FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification()
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        // إنشاء الحساب ناجح، تم إرسال رسالة تأكيد البريد الإلكتروني
+                                        Toast.makeText(getContext(), "Account Created Successfully. Please verify your email.", Toast.LENGTH_LONG).show();
+
+                                        // الانتقال إلى شاشة تسجيل الدخول باستخدام Intent
+                                        Intent intent = new Intent(getContext(), SingInFragment.class); // تغيير هذه الوجهة إذا كانت شاشة أخرى
+                                        startActivity(intent);
+                                    } else {
+                                        Toast.makeText(getContext(), "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        // فشل في إنشاء الحساب
+                        Toast.makeText(getContext(), "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

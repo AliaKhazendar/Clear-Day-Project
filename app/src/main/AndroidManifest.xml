@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ClearDayApplication">
         <activity
+            android:name=".ui.activitys.HomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activitys.AccountingActivity"
             android:exported="false" />
         <activity

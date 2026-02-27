@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/purple</item>
         <item name="colorPrimaryVariant">@color/magic_purple</item>
         <item name="colorOnPrimary">@color/white</item>
+
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_blue</item>
         <item name="colorSecondaryVariant">@color/dark_blue</item>
@@ -17,3 +18,34 @@
         <item name="colorSurface">@color/white</item>
     </style>
 </resources>
+
+
+<!--<resources xmlns:tools="http://schemas.android.com/tools">-->
+
+
+<!--    &lt;!&ndash; Base application theme using Material Components &ndash;&gt;-->
+<!--    <style name="Theme.ClearDayApplication" parent="Theme.MaterialComponents.DayNight.NoActionBar">-->
+
+<!--        &lt;!&ndash; تخصيص الألوان هنا &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/purple</item>-->
+<!--        <item name="colorPrimaryVariant">@color/magic_purple</item>-->
+<!--        <item name="colorOnPrimary">@color/white</item>-->
+
+<!--        &lt;!&ndash; تخصيص الألوان الثانوية &ndash;&gt;-->
+<!--        <item name="colorSecondary">@color/teal_blue</item>-->
+<!--        <item name="colorSecondaryVariant">@color/dark_blue</item>-->
+<!--        <item name="colorOnSecondary">@color/black</item>-->
+
+<!--        &lt;!&ndash; تخصيص الـ Status bar color &ndash;&gt;-->
+<!--        <item name="android:statusBarColor">@color/white</item>-->
+
+<!--        &lt;!&ndash; تخصيص خلفية النوافذ &ndash;&gt;-->
+<!--        <item name="android:windowBackground">@color/white</item>-->
+<!--        <item name="android:colorBackground">@color/white</item>-->
+<!--        <item name="colorSurface">@color/white</item>-->
+
+<!--        &lt;!&ndash; تخصيص TextAppearance لـ TextInputLayout &ndash;&gt;-->
+
+<!--    </style>-->
+
+<!--</resources>-->
