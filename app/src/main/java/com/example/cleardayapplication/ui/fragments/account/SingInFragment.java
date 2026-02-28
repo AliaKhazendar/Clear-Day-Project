@@ -1,5 +1,8 @@
 package com.example.cleardayapplication.ui.fragments.account;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +35,8 @@ public class SingInFragment extends Fragment {
 
         // إضافة حدث زر تسجيل الدخول
         binding.accountSingInButton.setOnClickListener(v -> {
+            binding.accountSingInButton.setCheckable(false);
+            binding.progressLoaderSingIn.setVisibility(VISIBLE);
             String email = binding.accountSingInEmail.getText().toString();
             String password = binding.accountSingInPassword.getText().toString();
 
@@ -46,13 +51,19 @@ public class SingInFragment extends Fragment {
                 // تسجيل الدخول
                 signInUser(email, password);
             }
+            binding.progressLoaderSingIn.setVisibility(INVISIBLE);
+            binding.accountSingInButton.setCheckable(true);
         });
 
         // إضافة حدث زر الانتقال إلى صفحة التسجيل
         binding.accountSingInSingUpButton.setOnClickListener(v -> {
             // الانتقال إلى شاشة التسجيل
-            Intent intent = new Intent(getContext(), SingUpFragment.class); // تغيير هذه الوجهة إذا كانت شاشة أخرى
-            startActivity(intent);
+            Fragment fragment = new SingUpFragment();
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.account_fragment, fragment)
+                    .commit();
         });
 
         return binding.getRoot();

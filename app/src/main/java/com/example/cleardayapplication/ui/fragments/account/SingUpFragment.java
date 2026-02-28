@@ -1,4 +1,7 @@
 package com.example.cleardayapplication.ui.fragments.account;
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,8 +11,8 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.FragmentSingUpBinding;
-import com.example.cleardayapplication.ui.fragments.account.SingInFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SingUpFragment extends Fragment {
@@ -30,10 +33,12 @@ public class SingUpFragment extends Fragment {
 
         // إضافة حدث زر إنشاء الحساب
         binding.accountSingUpButton.setOnClickListener(v -> {
+            binding.progressLoaderSingUp.setVisibility(VISIBLE);
             String userName = binding.accountSingUpUserName.getText().toString();
             String email = binding.accountSingUpEmail.getText().toString();
             String password = binding.accountSingUpPassword.getText().toString();
 
+            binding.accountSingUpButton.setCheckable(false);
             // تحقق من الحقول
             if (userName.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
@@ -45,13 +50,19 @@ public class SingUpFragment extends Fragment {
                 // إنشاء الحساب
                 createAccount(email, password);
             }
+            binding.progressLoaderSingUp.setVisibility(INVISIBLE);
+            binding.accountSingUpButton.setCheckable(true);
         });
 
         // إضافة حدث زر تسجيل الدخول
         binding.accountSingUpSingInButton.setOnClickListener(v -> {
             // هنا يمكنك استخدام Intent للتنقل إلى شاشة تسجيل الدخول
-            Intent intent = new Intent(getContext(), SingInFragment.class); // تأكد من أن لديك Activity لتسجيل الدخول
-            startActivity(intent);
+            Fragment fragment = new SingInFragment();
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.account_fragment, fragment)
+                    .commit();
         });
 
         return binding.getRoot();
@@ -79,6 +90,7 @@ public class SingUpFragment extends Fragment {
                         // فشل في إنشاء الحساب
                         Toast.makeText(getContext(), "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
+
                 });
     }
 }
