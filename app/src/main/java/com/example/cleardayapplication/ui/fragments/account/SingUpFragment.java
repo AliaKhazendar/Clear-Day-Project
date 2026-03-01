@@ -1,8 +1,8 @@
 package com.example.cleardayapplication.ui.fragments.account;
+
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,74 +23,118 @@ public class SingUpFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance(); // تهيئة Firebase Authentication
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // ربط ViewBinding
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
         binding = FragmentSingUpBinding.inflate(inflater, container, false);
 
-        // إضافة حدث زر إنشاء الحساب
+        // زر إنشاء الحساب
         binding.accountSingUpButton.setOnClickListener(v -> {
-            binding.progressLoaderSingUp.setVisibility(VISIBLE);
-            String userName = binding.accountSingUpUserName.getText().toString();
-            String email = binding.accountSingUpEmail.getText().toString();
-            String password = binding.accountSingUpPassword.getText().toString();
 
-            binding.accountSingUpButton.setCheckable(false);
-            // تحقق من الحقول
+            String userName = binding.accountSingUpUserName.getText().toString().trim();
+            String email = binding.accountSingUpEmail.getText().toString().trim();
+            String password = binding.accountSingUpPassword.getText().toString().trim();
+
             if (userName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
-            } else if (!email.contains("@")) {
-                Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
-            } else if (password.length() < 6) {
-                Toast.makeText(getContext(), "Password should be at least 6 characters", Toast.LENGTH_SHORT).show();
-            } else {
-                // إنشاء الحساب
-                createAccount(email, password);
+                Toast.makeText(getContext(),
+                        "Please fill all fields",
+                        Toast.LENGTH_SHORT).show();
+                return;
             }
-            binding.progressLoaderSingUp.setVisibility(INVISIBLE);
-            binding.accountSingUpButton.setCheckable(true);
+
+            if (!email.contains("@")) {
+                Toast.makeText(getContext(),
+                        "Please enter a valid email",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (password.length() < 6) {
+                Toast.makeText(getContext(),
+                        "Password should be at least 6 characters",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // إظهار اللودر وتعطيل الزر
+            binding.progressLoaderSingUp.setVisibility(VISIBLE);
+            binding.accountSingUpButton.setEnabled(false);
+
+            createAccount(email, password);
         });
 
-        // إضافة حدث زر تسجيل الدخول
+        // زر الانتقال لتسجيل الدخول
         binding.accountSingUpSingInButton.setOnClickListener(v -> {
-            // هنا يمكنك استخدام Intent للتنقل إلى شاشة تسجيل الدخول
-            Fragment fragment = new SingInFragment();
-            requireActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.account_fragment, fragment)
-                    .commit();
+            openSignInFragment();
         });
 
         return binding.getRoot();
     }
 
     private void createAccount(String email, String password) {
+
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(getActivity(), task -> {
+                .addOnCompleteListener(requireActivity(), task -> {
+
                     if (task.isSuccessful()) {
-                        // إرسال رسالة تأكيد للبريد الإلكتروني بعد إنشاء الحساب
-                        FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification()
+
+                        mAuth.getCurrentUser()
+                                .sendEmailVerification()
                                 .addOnCompleteListener(task1 -> {
+
                                     if (task1.isSuccessful()) {
-                                        // إنشاء الحساب ناجح، تم إرسال رسالة تأكيد البريد الإلكتروني
-                                        Toast.makeText(getContext(), "Account Created Successfully. Please verify your email.", Toast.LENGTH_LONG).show();
 
-                                        // الانتقال إلى شاشة تسجيل الدخول باستخدام Intent
-                                        Intent intent = new Intent(getContext(), SingInFragment.class); // تغيير هذه الوجهة إذا كانت شاشة أخرى
-                                        startActivity(intent);
+                                        Toast.makeText(getContext(),
+                                                "Account Created Successfully. Please verify your email.",
+                                                Toast.LENGTH_LONG).show();
+
+                                        openSignInFragment();
+
                                     } else {
-                                        Toast.makeText(getContext(), "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(),
+                                                "Failed to send verification email.",
+                                                Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                    } else {
-                        // فشل في إنشاء الحساب
-                        Toast.makeText(getContext(), "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
 
+                                    resetUI();
+                                });
+
+                    } else {
+
+                        Toast.makeText(getContext(),
+                                "Authentication Failed: "
+                                        + task.getException().getMessage(),
+                                Toast.LENGTH_LONG).show();
+
+                        resetUI();
+                    }
                 });
+    }
+
+    private void openSignInFragment() {
+
+        Fragment fragment = new SingInFragment();
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.account_fragment, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void resetUI() {
+        binding.progressLoaderSingUp.setVisibility(INVISIBLE);
+        binding.accountSingUpButton.setEnabled(true);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
