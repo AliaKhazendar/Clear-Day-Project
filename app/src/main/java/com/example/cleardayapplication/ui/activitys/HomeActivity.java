@@ -7,20 +7,45 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
+import com.example.cleardayapplication.databinding.ActivityHomeBinding;
+import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
 
 public class HomeActivity extends AppCompatActivity {
-
+    private ActivityHomeBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_home);
+        binding = ActivityHomeBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, new ProjectsFragment())
+                .addToBackStack(null)
+                .commit();
+
+        binding.bottomNavigation.setOnItemSelectedListener( item ->{
+            if (item.getItemId() == R.id.nav_home) {
+                navigateFragment(new ProjectsFragment());
+            } else if (item.getItemId() == R.id.nav_account) {
+
+            }
+            return true;
+        });
+    }
+
+    private void navigateFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
