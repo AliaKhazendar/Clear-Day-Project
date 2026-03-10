@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ActivityHomeBinding;
+import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
 
 public class HomeActivity extends AppCompatActivity {
@@ -39,6 +40,18 @@ public class HomeActivity extends AppCompatActivity {
 
             }
             return true;
+        });
+
+        // floating action button
+        binding.fabAdd.setOnClickListener(v->{
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            if(currentFragment instanceof ProjectsFragment){
+                // add project
+            }else if(currentFragment instanceof ProjectDetailsFragment){
+                // add task
+            }else{
+                binding.fabAdd.setEnabled(false);
+            }
         });
     }
 
