@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ActivityHomeBinding;
+import com.example.cleardayapplication.ui.fragments.project.AddProjectFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
 
@@ -46,7 +47,11 @@ public class HomeActivity extends AppCompatActivity {
         binding.fabAdd.setOnClickListener(v->{
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
             if(currentFragment instanceof ProjectsFragment){
-                // add project
+                AddProjectFragment dialog = new AddProjectFragment();
+                dialog.setOnProjectAddedListener(() -> {
+                    ((ProjectsFragment) currentFragment).loadCurrentUserProjects();
+                });
+                dialog.show(getSupportFragmentManager(), "AddProjectDialog");
             }else if(currentFragment instanceof ProjectDetailsFragment){
                 // add task
             }else{

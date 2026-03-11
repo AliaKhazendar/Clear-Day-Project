@@ -1,5 +1,7 @@
 package com.example.cleardayapplication.ui.fragments.project;
 
+import static com.example.cleardayapplication.domain.utils.Collections.PROJECTS;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -79,13 +81,13 @@ public class ProjectsFragment extends Fragment implements OnItemClicks {
         binding.rvProjects.setAdapter(adapter);
     }
 
-    private void loadCurrentUserProjects() {
+    public void loadCurrentUserProjects() {
 
         String currentUserId = auth.getCurrentUser().getUid();
 
         binding.progressLoader.setVisibility(View.VISIBLE);
 
-        firestore.collection("Project")
+        firestore.collection(PROJECTS)
                 .whereArrayContains("projectMembersId", currentUserId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
