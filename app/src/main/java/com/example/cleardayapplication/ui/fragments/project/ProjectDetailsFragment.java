@@ -146,9 +146,13 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                     return true;
 
                 } else if (id == R.id.menu_delete_project) {
-
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Delete Project")
+                            .setMessage("Are you sure you want to delete this project and all its tasks?")
+                            .setPositiveButton("Delete", (dialog, which) -> deleteProjectAndTasks())
+                            .setNegativeButton("Cancel", null)
+                            .show();
                     return true;
-
                 } else if (id == R.id.menu_delete_all_tasks) {
                     return true;
                 }
@@ -202,4 +206,55 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                         Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         }
+    private void deleteProjectAndTasks() {
+        if (projectId == null) return;
+
+        binding.progressLoaderPD.setVisibility(VISIBLE);
+
+        //  حذف كل المهام المرتبطة بالمشروع
+        firestore.collection(Collections.TASKS)
+                .whereArrayContains(Collections.PROJECT_ID, projectId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> taskIds = new ArrayList<>();
+                    for (var doc : queryDocumentSnapshots.getDocuments()) {
+                        taskIds.add(doc.getId());
+                    }
+
+                    // حذف كل المهام واحد واحد
+                    for (String taskId : taskIds) {
+                        firestore.collection(Collections.TASKS).document(taskId).delete();
+                    }
+
+                    // بعد حذف المهام، حذف المشروع نفسه
+                    firestore.collection(Collections.PROJECTS)
+                            .document(projectId)
+                            .delete()
+                            .addOnSuccessListener(aVoid -> {
+                                binding.progressLoaderPD.setVisibility(View.GONE);
+                                Toast.makeText(getContext(),
+                                        "Project and its tasks deleted successfully",
+                                        Toast.LENGTH_SHORT).show();
+
+                                // ارجع لشاشة الهوم
+                                getParentFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.fragment_container, new ProjectsFragment())
+                                        .commit();
+                            })
+                            .addOnFailureListener(e -> {
+                                binding.progressLoaderPD.setVisibility(View.GONE);
+                                Toast.makeText(getContext(),
+                                        "Failed to delete project: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            });
+
+                })
+                .addOnFailureListener(e -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+                    Toast.makeText(getContext(),
+                            "Failed to delete tasks: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
 }
