@@ -79,7 +79,7 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
         auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        // Recycler with all tasks
+        getProjectDetails();
         setupRecyclerView();
         getTaskList();
 
@@ -87,6 +87,31 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
 
         return binding.getRoot();
     }
+
+    private void getProjectDetails() {
+        if (projectId == null) return;
+
+        binding.progressLoaderPD.setVisibility(View.VISIBLE);
+        firestore.collection(Collections.PROJECTS)
+                .document(projectId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+                    if (documentSnapshot.exists()) {
+                        Project project = documentSnapshot.toObject(Project.class);
+                        if (project != null) {
+                            // تحديث واجهة المستخدم بالبيانات المجلوبة
+                            binding.projectName.setText(project.getName());
+                            binding.projectDescription.setText(project.getDescription());
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Error loading project details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     void setupRecyclerView(){
 
         adapter = new TaskAdapter(tasksList, this);
