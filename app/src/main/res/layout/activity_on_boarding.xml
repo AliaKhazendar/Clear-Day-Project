@@ -31,13 +31,13 @@
         app:selectedDotColor="@color/purple" />
 
     <Button
-        android:id="@+id/on_board_add_your_account"
+        android:id="@+id/on_board_sing_in_your_account"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="45dp"
         android:layout_marginTop="10dp"
-        android:text="@string/on_board_add_you_account"
+        android:text="@string/on_board_sing_in_you_account"
         android:textAllCaps="false"
         android:textAlignment="textStart"
         android:textSize="20sp"

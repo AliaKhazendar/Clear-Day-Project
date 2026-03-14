@@ -34,13 +34,11 @@ public class HomeActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
 
-        binding.bottomNavigation.setOnItemSelectedListener( item ->{
-            if (item.getItemId() == R.id.nav_home) {
-                navigateFragment(new ProjectsFragment());
-            } else if (item.getItemId() == R.id.nav_account) {
+        binding.navHome.setOnClickListener( item ->{
+            navigateFragment(new ProjectsFragment());
+        });
+        binding.navProfile.setOnClickListener(item ->{
 
-            }
-            return true;
         });
 
         // floating action button

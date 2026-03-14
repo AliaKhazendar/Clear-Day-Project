@@ -22,6 +22,7 @@
             android:layout_weight="1"
             android:text="@string/project_name"
             android:textSize="22sp"
+            android:paddingHorizontal="10dp"
             android:textStyle="bold" />
 
         <ImageView
@@ -38,13 +39,15 @@
 
     <TextView
         android:id="@+id/project_description"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout"
         android:text="@string/project_description_massage"
-        android:layout_marginStart="20dp"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginHorizontal="20dp"
+        android:lines="3"
+        android:textAlignment="textStart"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tasksRecycler"
@@ -76,7 +79,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="gone"
-        android:text="@string/no_projects_found"
+        android:text="@string/no_tasks_found"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
