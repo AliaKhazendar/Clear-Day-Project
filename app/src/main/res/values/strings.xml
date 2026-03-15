@@ -42,6 +42,7 @@
     <string name="actions_menu">actions(update/delete/delete all tasks)</string>
     <string name="project_update">Update</string>
     <string name="project_delete">Delete</string>
+    <string name="task_add">Add Task</string>
     <string name="project_delete_all_tasks">Delete All Tasks</string>
 
     <string name="status_closed">Closed</string>
@@ -58,6 +59,8 @@
     <string name="add_new_item">Add New Item</string>
     <string name="description_cannot_be_empty">⚠ Description cannot be empty</string>
     <string name="title_cannot_be_empty">⚠ Title cannot be empty</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

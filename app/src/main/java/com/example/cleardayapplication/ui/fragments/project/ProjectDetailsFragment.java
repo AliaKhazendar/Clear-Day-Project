@@ -24,6 +24,7 @@ import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.Collections;
 import com.example.cleardayapplication.domain.utils.OnItemClicks;
 import com.example.cleardayapplication.ui.adapters.TaskAdapter;
+import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -178,7 +179,21 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                             .setNegativeButton("Cancel", null)
                             .show();
                     return true;
-                } else if (id == R.id.menu_delete_all_tasks) {
+                }else if (id == R.id.menu_add_task) {
+                    if (projectId != null && auth.getCurrentUser() != null) {
+                        String userId = auth.getCurrentUser().getUid();
+
+                        // افتح Fragment إضافة مهمة مع تمرير الـ projectId و userId
+                        AddTaskFragment fragment = AddTaskFragment.newInstance(projectId, userId);
+                        getParentFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                    return true;
+                }
+                else if (id == R.id.menu_delete_all_tasks) {
                     return true;
                 }
 
