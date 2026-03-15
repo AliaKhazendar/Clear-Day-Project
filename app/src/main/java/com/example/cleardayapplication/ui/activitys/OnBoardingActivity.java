@@ -32,6 +32,8 @@ public class OnBoardingActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        SharedPreferences preferences = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        preferences.edit().putBoolean("isFirstTime", false).apply();
 
         SharedPreferences prefs = getSharedPreferences("clear_day_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
