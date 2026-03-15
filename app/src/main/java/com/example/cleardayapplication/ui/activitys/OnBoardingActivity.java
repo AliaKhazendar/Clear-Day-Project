@@ -4,6 +4,7 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +32,11 @@ public class OnBoardingActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        SharedPreferences prefs = getSharedPreferences("clear_day_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("isFirstTime", false);
+        editor.apply();
 
         OnBoardAdapter adapter = new OnBoardAdapter(this);
         binding.onBoardViewPager.setAdapter(adapter);
