@@ -92,9 +92,9 @@ public class AddTaskFragment extends Fragment {
 
         // تحديث ألوان الأزرار
         btnUrgent.setBackgroundTintList(getResources().getColorStateList(
-                status.equals("Urgent") ? R.color.purple : R.color.light_gray));
+                status.equals("Urgent") ? R.color.red : R.color.light_gray));
         btnRunning.setBackgroundTintList(getResources().getColorStateList(
-                status.equals("Running") ? R.color.purple : R.color.light_gray));
+                status.equals("Running") ? R.color.green : R.color.light_gray));
         btnOngoing.setBackgroundTintList(getResources().getColorStateList(
                 status.equals("Ongoing") ? R.color.purple : R.color.light_gray));
     }

@@ -160,7 +160,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:text="Ongoing"
-            android:backgroundTint="@color/green"
+            android:backgroundTint="@color/light_gray"
             app:layout_constraintTop_toBottomOf="@id/txtBoard"
             app:layout_constraintStart_toEndOf="@id/btnRunning"
         app:layout_constraintEnd_toEndOf="@id/etDate"
