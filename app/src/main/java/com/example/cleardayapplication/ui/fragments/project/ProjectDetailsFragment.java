@@ -225,6 +225,7 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                     .addOnSuccessListener(aVoid -> {
                         binding.progressLoaderPD.setVisibility(View.GONE);
                         Toast.makeText(getContext(), "Project updated successfully", Toast.LENGTH_SHORT).show();
+                        getProjectDetails();
                     })
                     .addOnFailureListener(e -> {
                         binding.progressLoaderPD.setVisibility(View.GONE);
