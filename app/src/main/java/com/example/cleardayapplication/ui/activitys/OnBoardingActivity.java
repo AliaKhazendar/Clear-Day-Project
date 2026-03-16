@@ -35,6 +35,11 @@ public class OnBoardingActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences("app_prefs", MODE_PRIVATE);
         preferences.edit().putBoolean("isFirstTime", false).apply();
 
+        SharedPreferences prefs = getSharedPreferences("clear_day_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("isFirstTime", false);
+        editor.apply();
+
         OnBoardAdapter adapter = new OnBoardAdapter(this);
         binding.onBoardViewPager.setAdapter(adapter);
         binding.onBoardTabIndicator.setViewPager2(binding.onBoardViewPager);
