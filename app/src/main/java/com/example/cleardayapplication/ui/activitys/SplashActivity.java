@@ -1,17 +1,8 @@
 package com.example.cleardayapplication.ui.activitys;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ActivitySplashBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,18 +15,43 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+<<<<<<< HEAD
+=======
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
         mAuth = FirebaseAuth.getInstance();
+>>>>>>> cc4551c6556167d911c6d7e407d26505328458a1
         binding.splashStartButton.setOnClickListener(v ->{
                 checkUserStatus();
         });
+<<<<<<< HEAD
+
+            SharedPreferences prefs = getSharedPreferences("clear_day_prefs", MODE_PRIVATE);
+            boolean isFirstTime = prefs.getBoolean("isFirstTime", true);
+            boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+
+            if (isLoggedIn) {
+                // المستخدم سجل الدخول مسبقاً -> اذهب مباشرة
+//                startActivity(new Intent(this, HomeActivity.class)); // أو AccountingActivity حسب تصميمك
+//                finish();
+                return; // مهم نرجع قبل أي setContentView
+            } else if (isFirstTime) {
+                // أول مرة -> اذهب إلى Onboarding
+                startActivity(new Intent(this, OnBoardingActivity.class));
+                finish();
+                return;
+            }
+
+            // إذا وصل هنا، يعني ليس أول مرة ولم يسجل الدخول
+            startActivity(new Intent(this, AccountingActivity.class));
+            finish();
+        }
+=======
     }
     private void checkUserStatus() {
         // 1. التحقق هل هذه أول مرة يفتح فيها التطبيق (لإظهار الـ OnBoarding)
@@ -58,4 +74,5 @@ public class SplashActivity extends AppCompatActivity {
         }
         finish();
     }
+>>>>>>> cc4551c6556167d911c6d7e407d26505328458a1
 }

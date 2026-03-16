@@ -35,6 +35,11 @@ public class OnBoardingActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences("app_prefs", MODE_PRIVATE);
         preferences.edit().putBoolean("isFirstTime", false).apply();
 
+        SharedPreferences prefs = getSharedPreferences("clear_day_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("isFirstTime", false);
+        editor.apply();
+
         OnBoardAdapter adapter = new OnBoardAdapter(this);
         binding.onBoardViewPager.setAdapter(adapter);
         binding.onBoardTabIndicator.setViewPager2(binding.onBoardViewPager);
@@ -44,13 +49,22 @@ public class OnBoardingActivity extends AppCompatActivity {
                 super.onPageSelected(position);
 
                 if (position == 2) {
-                    binding.onBoardAddYourAccount.setVisibility(VISIBLE);
+                    binding.onBoardSingInYourAccount.setText(R.string.on_board_sing_in_you_account);
+                    binding.onBoardSingInYourAccount.setVisibility(VISIBLE);
+                }else if(position == 0 ){
+                    binding.onBoardSingInYourAccount.setText(R.string.skip_message);
+                    binding.onBoardSingInYourAccount.setVisibility(VISIBLE);
                 }else{
-                    binding.onBoardAddYourAccount.setVisibility(INVISIBLE);
+                    binding.onBoardSingInYourAccount.setVisibility(INVISIBLE);
                 }
-                binding.onBoardAddYourAccount.setOnClickListener(v->{
-                    startActivity(new Intent(OnBoardingActivity.this, AccountingActivity.class));
-                    finish();
+                binding.onBoardSingInYourAccount.setOnClickListener(v->{
+                    if(position == 2) {
+                        startActivity(new Intent(OnBoardingActivity.this, AccountingActivity.class));
+                        finish();
+                    }
+                    else
+                        binding.onBoardViewPager.setCurrentItem(2, true);
+
                 });
 
             }
