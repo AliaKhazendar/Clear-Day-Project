@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/project_name"
+        android:textStyle="bold"
+        android:textColor="#6B7280"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/project_title_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_name"
+        android:inputType="textCapSentences"
+        android:background="@android:drawable/editbox_background"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/project_description"
+        android:textStyle="bold"
+        android:textColor="#6B7280"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/project_description_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_project_description"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:background="@android:drawable/editbox_background"/>
+
+</LinearLayout>

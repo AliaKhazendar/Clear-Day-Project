@@ -8,4 +8,5 @@ package com.example.cleardayapplication.domain.utils;
 public interface RepositoryCallback<T> {
     void onSuccess(T result);
     void onError(Exception exception);
+    void onFailure(String errorMessage);
 }
