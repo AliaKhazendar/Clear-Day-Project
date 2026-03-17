@@ -26,7 +26,7 @@ public class AddTaskFragment extends Fragment {
     private String projectId;
     private String userId;
 
-    private EditText etTaskName, etDate, etStart, etEnd;
+    private EditText etTaskName, etDate, etStart, etEnd,etTaskDescription;
     private Button btnUrgent, btnRunning, btnOngoing, btnSave;
 
     private String selectedStatus = "Running"; // افتراضي
@@ -61,6 +61,7 @@ public class AddTaskFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_task, container, false);
 
         etTaskName = view.findViewById(R.id.etTaskName);
+        etTaskDescription = view.findViewById(R.id.etTaskDescription);
         etDate = view.findViewById(R.id.etDate);
         etStart = view.findViewById(R.id.etStart);
         etEnd = view.findViewById(R.id.etEnd);
@@ -128,12 +129,14 @@ public class AddTaskFragment extends Fragment {
 
     private void saveTask() {
         String taskName = etTaskName.getText().toString().trim();
+        String tasDescription = etTaskDescription.getText().toString().trim();
         String date = etDate.getText().toString().trim();
         String startTime = etStart.getText().toString().trim();
         String endTime = etEnd.getText().toString().trim();
 
         // Validation
         if (taskName.isEmpty()) { etTaskName.setError("Enter task name"); return; }
+        if (tasDescription.isEmpty()) { etTaskDescription.setError("Enter task name"); return; }
         if (date.isEmpty()) { etDate.setError("Select date"); return; }
         if (startTime.isEmpty()) { etStart.setError("Select start time"); return; }
         if (endTime.isEmpty()) { etEnd.setError("Select end time"); return; }
@@ -147,13 +150,39 @@ public class AddTaskFragment extends Fragment {
         task.setUserId(userId);
         task.setStatus(selectedStatus);
 
+        // تعيين قيم إضافية لتجنب Null
+        task.setCreatedBy(userId);        // من أنشأ المهمة
+        //task.setDescription("");          // وصف فارغ بدل null
+        // taskId سيتم تعيينه بعد إضافة المستند
         firestore.collection("tasks")
                 .add(task)
                 .addOnSuccessListener(docRef -> {
+                    // بعد الإضافة، يمكن تحديث taskId بنفس الـ docId
+                    docRef.update("taskId", docRef.getId());
+
                     Toast.makeText(getContext(), "Task added successfully", Toast.LENGTH_SHORT).show();
                     getParentFragmentManager().popBackStack(); // ارجع للشاشة السابقة
                 })
                 .addOnFailureListener(e -> Toast.makeText(getContext(),
                         "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // اخفاء الـ BottomNavigation
+        if (getActivity() != null) {
+            View bottomNav = getActivity().findViewById(R.id.nav_home); // تأكد من ID الصحيح
+            if (bottomNav != null) bottomNav.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // إرجاعه للظهور عند الخروج من Fragment
+        if (getActivity() != null) {
+            View bottomNav = getActivity().findViewById(R.id.nav_home);
+            if (bottomNav != null) bottomNav.setVisibility(View.VISIBLE);
+        }
     }
 }

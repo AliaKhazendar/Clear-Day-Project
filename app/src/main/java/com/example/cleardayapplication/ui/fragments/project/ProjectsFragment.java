@@ -118,4 +118,23 @@ public class ProjectsFragment extends Fragment implements OnItemClicks {
                 .replace(R.id.fragment_container,ProjectDetailsFragment.newInstance(obj))
                 .commit();
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // اخفاء الـ BottomNavigation
+        if (getActivity() != null) {
+            View bottomNav = getActivity().findViewById(R.id.nav_home); // تأكد من ID الصحيح
+            if (bottomNav != null) bottomNav.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // إرجاعه للظهور عند الخروج من Fragment
+        if (getActivity() != null) {
+            View bottomNav = getActivity().findViewById(R.id.nav_home);
+            if (bottomNav != null) bottomNav.setVisibility(View.VISIBLE);
+        }
+    }
 }
