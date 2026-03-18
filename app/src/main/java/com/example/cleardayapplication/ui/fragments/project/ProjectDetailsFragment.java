@@ -42,6 +42,13 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
     private TaskAdapter adapter;
     FirebaseAuth auth;
     FirebaseFirestore firestore;
+    private OnAddTaskListener addTaskListener;
+    public interface OnAddTaskListener {
+        void onAddTaskClicked(String projectId, String userId);
+    }
+    public void setOnAddTaskListener(OnAddTaskListener listener){
+        this.addTaskListener = listener;
+    }
 
     private List<Task> tasksList = new ArrayList<>();
 
@@ -179,20 +186,22 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                             .setNegativeButton("Cancel", null)
                             .show();
                     return true;
-                }else if (id == R.id.menu_add_task) {
-                    if (projectId != null && auth.getCurrentUser() != null) {
-                        String userId = auth.getCurrentUser().getUid();
-
-                        // افتح Fragment إضافة مهمة مع تمرير الـ projectId و userId
-                        AddTaskFragment fragment = AddTaskFragment.newInstance(projectId, userId);
-                        getParentFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, fragment)
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                    return true;
                 }
+//                else if (id == R.id.menu_add_task) {
+//                    if (projectId != null && auth.getCurrentUser() != null) {
+//                        String userId = auth.getCurrentUser().getUid();
+//
+//                        // افتح Fragment إضافة مهمة مع تمرير الـ projectId و userId
+//                        AddTaskFragment fragment = AddTaskFragment.newInstance(projectId, userId);
+//                        getParentFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.fragment_container, fragment)
+//                                .addToBackStack(null)
+//                                .commit();
+//
+//                    }
+//                    return true;
+//                }
                 else if (id == R.id.menu_delete_all_tasks) {
                     return true;
                 }
@@ -296,5 +305,12 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                             "Failed to delete tasks: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 });
+    }
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public FirebaseAuth getAuth() {
+        return auth;
     }
 }

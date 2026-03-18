@@ -8,12 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.domain.model.Task;
+import com.example.cleardayapplication.domain.utils.Collections;
+import com.example.cleardayapplication.ui.activitys.HomeActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
@@ -85,6 +88,9 @@ public class AddTaskFragment extends Fragment {
 
         btnSave.setOnClickListener(v -> saveTask());
 
+        ImageView btnBack = view.findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
         return view;
     }
 
@@ -129,20 +135,21 @@ public class AddTaskFragment extends Fragment {
 
     private void saveTask() {
         String taskName = etTaskName.getText().toString().trim();
-        String tasDescription = etTaskDescription.getText().toString().trim();
+        String taskDescription = etTaskDescription.getText().toString().trim();
         String date = etDate.getText().toString().trim();
         String startTime = etStart.getText().toString().trim();
         String endTime = etEnd.getText().toString().trim();
 
         // Validation
         if (taskName.isEmpty()) { etTaskName.setError("Enter task name"); return; }
-        if (tasDescription.isEmpty()) { etTaskDescription.setError("Enter task name"); return; }
+        if (taskDescription.isEmpty()) { etTaskDescription.setError("Enter task name"); return; }
         if (date.isEmpty()) { etDate.setError("Select date"); return; }
         if (startTime.isEmpty()) { etStart.setError("Select start time"); return; }
         if (endTime.isEmpty()) { etEnd.setError("Select end time"); return; }
 
         Task task = new Task();
         task.setTitle(taskName);
+        task.setDescription(taskDescription);
         task.setDate(date);
         task.setStartTime(startTime);
         task.setEndTime(endTime);
@@ -154,7 +161,7 @@ public class AddTaskFragment extends Fragment {
         task.setCreatedBy(userId);        // من أنشأ المهمة
         //task.setDescription("");          // وصف فارغ بدل null
         // taskId سيتم تعيينه بعد إضافة المستند
-        firestore.collection("tasks")
+        firestore.collection(Collections.TASKS)
                 .add(task)
                 .addOnSuccessListener(docRef -> {
                     // بعد الإضافة، يمكن تحديث taskId بنفس الـ docId
@@ -167,22 +174,10 @@ public class AddTaskFragment extends Fragment {
                         "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
     @Override
-    public void onResume() {
-        super.onResume();
-        // اخفاء الـ BottomNavigation
-        if (getActivity() != null) {
-            View bottomNav = getActivity().findViewById(R.id.nav_home); // تأكد من ID الصحيح
-            if (bottomNav != null) bottomNav.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // إرجاعه للظهور عند الخروج من Fragment
-        if (getActivity() != null) {
-            View bottomNav = getActivity().findViewById(R.id.nav_home);
-            if (bottomNav != null) bottomNav.setVisibility(View.VISIBLE);
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(getActivity() instanceof HomeActivity){
+            ((HomeActivity)getActivity()).binding.fabAdd.setVisibility(View.VISIBLE);
         }
     }
 }
