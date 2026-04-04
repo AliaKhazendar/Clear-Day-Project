@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,17 +135,19 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
        // get task list from fire store
         binding.progressLoaderPD.setVisibility(VISIBLE);
         firestore.collection(Collections.TASKS)
-                .whereArrayContains(Collections.PROJECT_ID,projectId)
+                .whereEqualTo(Collections.PROJECT_ID,projectId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-
+                    Log.d("TAG", "getTaskList: 00");
                     binding.progressLoaderPD.setVisibility(View.GONE);
 
                     if(!queryDocumentSnapshots.isEmpty()){
                         tasksList = queryDocumentSnapshots.toObjects(Task.class);
+                        Log.d("TAG", "getTaskList: "+ tasksList.size());
                         adapter.updateList(tasksList);
+                        binding.emptyStatePD.setVisibility(View.GONE);
                     }else{
-                        binding.emptyStatePD.setVisibility(View.VISIBLE);
+                        binding.emptyStatePD.setVisibility(VISIBLE);
                     }
 
                 }).addOnFailureListener(exception->{
@@ -262,7 +265,7 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
 
         //  حذف كل المهام المرتبطة بالمشروع
         firestore.collection(Collections.TASKS)
-                .whereArrayContains(Collections.PROJECT_ID, projectId)
+                .whereEqualTo(Collections.PROJECT_ID, projectId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<String> taskIds = new ArrayList<>();
