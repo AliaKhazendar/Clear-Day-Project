@@ -1,11 +1,10 @@
 package com.example.cleardayapplication.ui.adapters;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cleardayapplication.R;
@@ -45,7 +44,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     @Override
     public int getItemCount() {
-        return !taskList.isEmpty()? taskList.size():0;
+        return taskList != null ? taskList.size() : 0;
     }
 
     public class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -59,14 +58,25 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             binding.taskTitle.setText(task.getTitle());
             binding.taskDesc.setText(task.getDescription());
 
-            if ("open".equalsIgnoreCase(task.getStatus())) {
-                binding.taskStatus.setText(R.string.status_open);
-                binding.taskStatus.getBackground()
-                        .setTint(Color.parseColor("#4CAF50")); // green
+            int color;
+            String status = task.getStatus();
+
+            if ("Urgent".equalsIgnoreCase(status)) {
+                binding.taskStatus.setText("Urgent");
+                color = ContextCompat.getColor(itemView.getContext(), R.color.red);
+            } else if ("Running".equalsIgnoreCase(status)) {
+                binding.taskStatus.setText("Running");
+                color = ContextCompat.getColor(itemView.getContext(), R.color.green);
+            } else if ("Ongoing".equalsIgnoreCase(status)) {
+                binding.taskStatus.setText("Ongoing");
+                color = ContextCompat.getColor(itemView.getContext(), R.color.purple);
             } else {
-                binding.taskStatus.setText(R.string.status_closed);
-                binding.taskStatus.getBackground()
-                        .setTint(Color.parseColor("#F44336")); // red
+                binding.taskStatus.setText(status != null ? status : "");
+                color = ContextCompat.getColor(itemView.getContext(), R.color.light_gray);
+            }
+
+            if (binding.taskStatus.getBackground() != null) {
+                binding.taskStatus.getBackground().setTint(color);
             }
         }
     }

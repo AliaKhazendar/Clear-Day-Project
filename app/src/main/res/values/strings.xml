@@ -11,7 +11,8 @@
     <string name="on_board_message_one">Let\'s create a\n<b>spase</b> for your\nworkflows.</string>
     <string name="on_board_message_two">Work more\n<b>Structured</b> and\nOrganized👌</string>
     <string name="on_board_message_there">Manage your\n<b>Tasks</b> quickly for\nResults✌</string>
-    <string name="on_board_add_you_account">Add Your Account</string>
+    <string name="on_board_sing_in_you_account">Sing in</string>
+    <string name="skip_message">Skip</string>
 
     <string name="account_sing_in_title_or_button">Sing In</string>
     <string name="account_sing_up_title_or_button">Sing Up</string>
@@ -41,13 +42,25 @@
     <string name="actions_menu">actions(update/delete/delete all tasks)</string>
     <string name="project_update">Update</string>
     <string name="project_delete">Delete</string>
+    <string name="task_add">Add Task</string>
     <string name="project_delete_all_tasks">Delete All Tasks</string>
 
     <string name="status_closed">Closed</string>
     <string name="status_open">Open</string>
     <string name="no_projects_found">No projects found</string>
+    <string name="no_tasks_found">No tasks found</string>
     <string name="enter_name">Please enter project Name</string>
     <string name="enter_project_description">Please enter project Description</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_description">Enter description…</string>
+    <string name="description">Description</string>
+    <string name="enter_title">Enter title…</string>
+    <string name="title">Title</string>
+    <string name="add_new_item">Add New Item</string>
+    <string name="description_cannot_be_empty">⚠ Description cannot be empty</string>
+    <string name="title_cannot_be_empty">⚠ Title cannot be empty</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

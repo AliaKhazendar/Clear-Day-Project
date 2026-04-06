@@ -13,6 +13,8 @@ public class Project {
     private List<String> projectMembersId;
     private List<String> tasksId;
 
+    private long createAt;
+
     // Empty constructor (required for Firestore)
     public Project() {}
 
@@ -25,6 +27,8 @@ public class Project {
     public List<String> getProjectMembersId() { return projectMembersId; }
     public List<String> getTasksId() { return tasksId; }
 
+    public void setCreateAt(long createAt) { this.createAt = createAt; }
+
     // Setters
     public void setProjectId(String projectId) { this.projectId = projectId; }
     public void setName(String name) { this.name = name; }
@@ -33,4 +37,5 @@ public class Project {
     public void setStatus(String status) { this.status = status; }
     public void setProjectMembersId(List<String> projectMembersId) { this.projectMembersId = projectMembersId; }
     public void setTasksId(List<String> tasksId) { this.tasksId = tasksId; }
+    public long getCreateAt() { return createAt; }
 }
