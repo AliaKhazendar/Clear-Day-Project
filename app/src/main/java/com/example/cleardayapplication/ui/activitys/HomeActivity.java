@@ -16,6 +16,7 @@ import com.example.cleardayapplication.ui.fragments.project.AddProjectFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
 import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
     public ActivityHomeBinding binding;
@@ -56,8 +57,8 @@ public class HomeActivity extends AppCompatActivity {
             } else if (currentFragment instanceof ProjectDetailsFragment) {
                 ProjectDetailsFragment projectFragment = (ProjectDetailsFragment) currentFragment;
 
-                String projectId = projectFragment.getProjectId();  // بدك تضيف getter
-                String userId = projectFragment.getAuth().getCurrentUser().getUid();
+                String projectId = projectFragment.getProjectId();
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                 // اخفاء الزر قبل فتح Fragment
                 binding.fabAdd.setVisibility(View.GONE);
