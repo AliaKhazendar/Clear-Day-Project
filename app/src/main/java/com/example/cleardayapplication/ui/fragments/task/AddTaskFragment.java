@@ -2,6 +2,7 @@ package com.example.cleardayapplication.ui.fragments.task;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
@@ -29,10 +31,10 @@ public class AddTaskFragment extends Fragment {
     private String projectId;
     private String userId;
 
-    private EditText etTaskName, etDate, etStart, etEnd,etTaskDescription;
+    private EditText etTaskName, etDate, etStart, etEnd, etTaskDescription;
     private Button btnUrgent, btnRunning, btnOngoing, btnSave;
 
-    private String selectedStatus = "Running"; // افتراضي
+    private String selectedStatus = "Running"; // Default
 
     private FirebaseFirestore firestore;
 
@@ -74,7 +76,7 @@ public class AddTaskFragment extends Fragment {
         btnOngoing = view.findViewById(R.id.btnOngoing);
         btnSave = view.findViewById(R.id.btnSave);
 
-        // اختيار Board
+        // Board Selection
         btnUrgent.setOnClickListener(v -> selectBoard("Urgent"));
         btnRunning.setOnClickListener(v -> selectBoard("Running"));
         btnOngoing.setOnClickListener(v -> selectBoard("Ongoing"));
@@ -89,7 +91,12 @@ public class AddTaskFragment extends Fragment {
         btnSave.setOnClickListener(v -> saveTask());
 
         ImageView btnBack = view.findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        }
+
+        // Initialize status selection colors
+        selectBoard(selectedStatus);
 
         return view;
     }
@@ -97,13 +104,15 @@ public class AddTaskFragment extends Fragment {
     private void selectBoard(String status) {
         selectedStatus = status;
 
-        // تحديث ألوان الأزرار
-        btnUrgent.setBackgroundTintList(getResources().getColorStateList(
-                status.equals("Urgent") ? R.color.red : R.color.light_gray));
-        btnRunning.setBackgroundTintList(getResources().getColorStateList(
-                status.equals("Running") ? R.color.green : R.color.light_gray));
-        btnOngoing.setBackgroundTintList(getResources().getColorStateList(
-                status.equals("Ongoing") ? R.color.purple : R.color.light_gray));
+        int activeColor = ContextCompat.getColor(requireContext(), R.color.purple); // Default active color
+        int inactiveColor = ContextCompat.getColor(requireContext(), R.color.light_gray);
+
+        if ("Urgent".equals(status)) activeColor = ContextCompat.getColor(requireContext(), R.color.red);
+        else if ("Running".equals(status)) activeColor = ContextCompat.getColor(requireContext(), R.color.green);
+
+        btnUrgent.setBackgroundTintList(ColorStateList.valueOf(status.equals("Urgent") ? activeColor : inactiveColor));
+        btnRunning.setBackgroundTintList(ColorStateList.valueOf(status.equals("Running") ? activeColor : inactiveColor));
+        btnOngoing.setBackgroundTintList(ColorStateList.valueOf(status.equals("Ongoing") ? activeColor : inactiveColor));
     }
 
     private void showDatePicker() {
@@ -142,7 +151,7 @@ public class AddTaskFragment extends Fragment {
 
         // Validation
         if (taskName.isEmpty()) { etTaskName.setError("Enter task name"); return; }
-        if (taskDescription.isEmpty()) { etTaskDescription.setError("Enter task name"); return; }
+        if (taskDescription.isEmpty()) { etTaskDescription.setError("Enter description"); return; }
         if (date.isEmpty()) { etDate.setError("Select date"); return; }
         if (startTime.isEmpty()) { etStart.setError("Select start time"); return; }
         if (endTime.isEmpty()) { etEnd.setError("Select end time"); return; }
@@ -156,23 +165,22 @@ public class AddTaskFragment extends Fragment {
         task.setProjectId(projectId);
         task.setUserId(userId);
         task.setStatus(selectedStatus);
+        task.setCreatedBy(userId);
 
-        // تعيين قيم إضافية لتجنب Null
-        task.setCreatedBy(userId);        // من أنشأ المهمة
-        //task.setDescription("");          // وصف فارغ بدل null
-        // taskId سيتم تعيينه بعد إضافة المستند
         firestore.collection(Collections.TASKS)
                 .add(task)
                 .addOnSuccessListener(docRef -> {
-                    // بعد الإضافة، يمكن تحديث taskId بنفس الـ docId
-                    docRef.update("taskId", docRef.getId());
-
+                    // Update document with its own ID for easier reference
+                    String taskId = docRef.getId();
+                    docRef.update("taskId", taskId);
+                    
                     Toast.makeText(getContext(), "Task added successfully", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack(); // ارجع للشاشة السابقة
+                    getParentFragmentManager().popBackStack(); 
                 })
                 .addOnFailureListener(e -> Toast.makeText(getContext(),
                         "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

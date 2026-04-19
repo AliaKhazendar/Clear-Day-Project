@@ -3,6 +3,7 @@ package com.example.cleardayapplication.ui.fragments.project;
 import static android.view.View.VISIBLE;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.example.cleardayapplication.databinding.FragmentProjectDetailesBindin
 import com.example.cleardayapplication.domain.model.Project;
 import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.Collections;
+import com.example.cleardayapplication.domain.utils.OnGoToInvitePeopleListener;
 import com.example.cleardayapplication.domain.utils.OnItemClicks;
 import com.example.cleardayapplication.ui.adapters.TaskAdapter;
 import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
@@ -35,7 +37,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
+public class ProjectDetailsFragment extends Fragment implements OnItemClicks{
 
     private static final String PROJECT_ID = "project_id";
 
@@ -44,9 +46,17 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
     FirebaseAuth auth;
     FirebaseFirestore firestore;
     private OnAddTaskListener addTaskListener;
+    private OnGoToInvitePeopleListener goToInvitePeopleListener;
     public interface OnAddTaskListener {
         void onAddTaskClicked(String projectId, String userId);
     }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        goToInvitePeopleListener = (OnGoToInvitePeopleListener) context;
+    }
+
     public void setOnAddTaskListener(OnAddTaskListener listener){
         this.addTaskListener = listener;
     }
@@ -188,6 +198,9 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                             .setPositiveButton("Delete", (dialog, which) -> deleteProjectAndTasks())
                             .setNegativeButton("Cancel", null)
                             .show();
+                    return true;
+                } else if (id == R.id.menu_invite_new_user) {
+                    goToInvitePeopleListener.onGoToInvitePeople(projectId);
                     return true;
                 }
 //                else if (id == R.id.menu_add_task) {

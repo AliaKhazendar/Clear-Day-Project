@@ -12,12 +12,15 @@ import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ActivityHomeBinding;
+import com.example.cleardayapplication.domain.utils.OnGoToInvitePeopleListener;
+import com.example.cleardayapplication.ui.fragments.invitation.InvitationFragment;
+import com.example.cleardayapplication.ui.fragments.invitation.SendInvitationFragment;
 import com.example.cleardayapplication.ui.fragments.project.AddProjectFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
 import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopleListener {
     public ActivityHomeBinding binding;
 
     @Override
@@ -30,6 +33,11 @@ public class HomeActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+        binding.ivInvitation.setVisibility(View.VISIBLE);
+        binding.ivInvitation.setOnClickListener(view ->{
+            navigateFragment(new InvitationFragment());
+            binding.ivInvitation.setVisibility(View.GONE);
         });
 
         getSupportFragmentManager().beginTransaction()
@@ -80,6 +88,11 @@ public class HomeActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onGoToInvitePeople(String projectId) {
+        navigateFragment(SendInvitationFragment.newInstance(projectId));
     }
 }
 
