@@ -19,6 +19,7 @@ import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ItemTaskBinding;
 import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.OnItemClicks;
+import com.example.cleardayapplication.domain.utils.OnTaskEditedListener;
 
 import java.util.List;
 
@@ -26,11 +27,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     private List<Task> taskList;
     private OnItemClicks onItemClicks;
+    private OnTaskEditedListener onEditTaskClick;
 
-    public TaskAdapter(List<Task> taskList, OnItemClicks onItemClicks){
+    public TaskAdapter(List<Task> taskList, OnItemClicks onItemClicks, OnTaskEditedListener onEditTaskClick){
         this.taskList = taskList;
         this.onItemClicks = onItemClicks;
+        this.onEditTaskClick = onEditTaskClick;
     }
+
+
 
     public void updateList(List<Task> taskList){
         this.taskList = taskList;
@@ -65,6 +70,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         public void bind(Task task){
             binding.taskTitle.setText(task.getTitle());
             binding.taskDesc.setText(task.getDescription());
+            binding.ivEditIcon.setOnClickListener(view ->{
+                onEditTaskClick.onTaskEdited(task.getTaskId());
+            });
 
             int color;
             String status = task.getStatus();
@@ -112,6 +120,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                         img.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
                         binding.attachmentsContainer.addView(img);
+
 
                     } catch (Exception e) {
                         e.printStackTrace();

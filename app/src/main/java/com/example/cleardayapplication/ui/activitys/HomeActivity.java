@@ -2,6 +2,7 @@ package com.example.cleardayapplication.ui.activitys;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,13 +13,16 @@ import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ActivityHomeBinding;
+import com.example.cleardayapplication.domain.model.Task;
+import com.example.cleardayapplication.domain.utils.OnTaskEditedListener;
 import com.example.cleardayapplication.ui.fragments.project.AddProjectFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
 import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
+import com.example.cleardayapplication.ui.fragments.task.EditTasksInformationFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements OnTaskEditedListener {
     public ActivityHomeBinding binding;
 
     @Override
@@ -82,6 +86,19 @@ public class HomeActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
     }
+
+    @Override
+    public void onTaskEdited(String taskID) {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment instanceof ProjectDetailsFragment) {
+            EditTasksInformationFragment dialog = EditTasksInformationFragment.newInstance(taskID);
+            dialog.setOnTakEditedListener(() -> {
+                ((ProjectDetailsFragment) currentFragment).getTaskList();
+            });
+            dialog.show(getSupportFragmentManager(), "EditTaskDialog");
+        }
+    }
+
 }
 
 

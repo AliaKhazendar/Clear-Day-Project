@@ -62,6 +62,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="unknown">Unknown</string>
+    <string name="edit_task_information">Edit Task Information</string>
+    <string name="edit">Edit</string>
+    <string name="bee">🐝</string>
+    <string name="invalid_request_to_edit">Invalid Request to Edit</string>
 
 
 </resources>

@@ -3,6 +3,7 @@ package com.example.cleardayapplication.ui.fragments.project;
 import static android.view.View.VISIBLE;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.example.cleardayapplication.domain.model.Project;
 import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.Collections;
 import com.example.cleardayapplication.domain.utils.OnItemClicks;
+import com.example.cleardayapplication.domain.utils.OnTaskEditedListener;
 import com.example.cleardayapplication.ui.adapters.TaskAdapter;
 import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,11 +46,19 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
     FirebaseAuth auth;
     FirebaseFirestore firestore;
     private OnAddTaskListener addTaskListener;
+    private OnTaskEditedListener editTaskListener;
     public interface OnAddTaskListener {
         void onAddTaskClicked(String projectId, String userId);
     }
     public void setOnAddTaskListener(OnAddTaskListener listener){
         this.addTaskListener = listener;
+
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.editTaskListener = (OnTaskEditedListener) context;
     }
 
     private List<Task> tasksList = new ArrayList<>();
@@ -97,7 +107,7 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
         return binding.getRoot();
     }
 
-    private void getProjectDetails() {
+    public void getProjectDetails() {
         if (projectId == null) return;
 
         binding.progressLoaderPD.setVisibility(View.VISIBLE);
@@ -123,7 +133,7 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
 
     void setupRecyclerView(){
 
-        adapter = new TaskAdapter(tasksList, this);
+        adapter = new TaskAdapter(tasksList, this, editTaskListener);
 
         binding.tasksRecycler.setLayoutManager(
                 new LinearLayoutManager(getContext()));
@@ -131,7 +141,7 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
 
     }
 
-    void getTaskList(){
+    public void getTaskList(){
        // get task list from fire store
         binding.progressLoaderPD.setVisibility(VISIBLE);
         firestore.collection(Collections.TASKS)
