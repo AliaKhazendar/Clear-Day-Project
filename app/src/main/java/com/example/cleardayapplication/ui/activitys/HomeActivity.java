@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ActivityHomeBinding;
+import com.example.cleardayapplication.ui.fragments.profile.*;
 import com.example.cleardayapplication.ui.fragments.project.AddProjectFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
@@ -28,17 +29,13 @@ public class HomeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, new ProjectsFragment())
-                .addToBackStack(null)
-                .commit();
+        navigateFragment(new ProjectsFragment());
 
         binding.navHome.setOnClickListener( item ->{
             navigateFragment(new ProjectsFragment());
         });
-        binding.navProfile.setOnClickListener(item ->{
-
+        binding.navProfile.setOnClickListener( item ->{
+            navigateFragment(new ProfileFragment());
         });
 
         // floating action button
