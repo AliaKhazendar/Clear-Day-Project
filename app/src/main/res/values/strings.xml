@@ -70,6 +70,11 @@
     <string name="no_pending_invitations">No Pending Invitations</string>
     <string name="current_invitations">Current Invitations</string>
     <string name="accept">Accept</string>
+    <string name="edit_task_information">Edit Task Information</string>
+    <string name="edit">Edit</string>
+    <string name="bee">🐝</string>
+    <string name="invalid_request_to_edit">Invalid Request to Edit</string>
+
 
 
 </resources>
