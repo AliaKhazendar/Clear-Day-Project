@@ -4,28 +4,31 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.fragment.app.Fragment;
+
+import com.bumptech.glide.Glide;
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.FragmentProfileBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.rpc.ErrorInfo;
+import com.google.firebase.firestore.SetOptions;
+
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileFragment extends Fragment {
-
 
     private FragmentProfileBinding binding;
     private boolean isEditing = false;
@@ -35,38 +38,17 @@ public class ProfileFragment extends Fragment {
     private String userId;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
-
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FragmentProfileBinding binding = FragmentProfileBinding.inflate(inflater, container, false);
 
-
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
 
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        // ✅ إعداد Cloudinary (بدون api_secret)
-        Map<String,String> config = new HashMap();
-        config.put("cloud_name", "ddwdujzxz"); // 👈 غيريها إذا لزم
+        Map config = new HashMap();
+        config.put("cloud_name", "ddwdujzxz");
 
         try {
             MediaManager.init(requireContext(), config);
@@ -117,6 +99,7 @@ public class ProfileFragment extends Fragment {
 
         return binding.getRoot();
     }
+
     private void enableEditing(boolean enable) {
         isEditing = enable;
         if (enable) {

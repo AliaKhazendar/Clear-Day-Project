@@ -49,12 +49,26 @@
             android:textSize="18sp"
             android:padding="12dp"/>
 
-        <EditText
-            android:id="@+id/et_user_name"
-            android:textColor="@color/black"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_user_name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxStrokeColor="@color/purple"
+            app:hintTextColor="@color/purple">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_user_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:inputType="textPersonName"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:text="Email"
@@ -72,12 +86,26 @@
             android:textSize="18sp"
             android:padding="12dp"/>
 
-        <EditText
-            android:id="@+id/et_email"
-            android:textColor="@color/black"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_email"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxStrokeColor="@color/purple"
+            app:hintTextColor="@color/purple">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btn_edit"
