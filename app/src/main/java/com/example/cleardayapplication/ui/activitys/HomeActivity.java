@@ -12,11 +12,17 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
+import com.example.cleardayapplication.databinding.ActivityHomeBinding;
+import com.example.cleardayapplication.domain.utils.OnGoToInvitePeopleListener;
+import com.example.cleardayapplication.ui.fragments.invitation.InvitationFragment;
+import com.example.cleardayapplication.ui.fragments.invitation.SendInvitationFragment;
+
 import com.example.cleardayapplication.databinding.ActivityHomeBindin
 import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.OnTaskEditedListener;
 
 import com.example.cleardayapplication.ui.fragments.profile.*;
+
 import com.example.cleardayapplication.ui.fragments.project.AddProjectFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
@@ -24,6 +30,7 @@ import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
 import com.example.cleardayapplication.ui.fragments.task.EditTasksInformationFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
+public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopleListener {
 public class HomeActivity extends AppCompatActivity implements OnTaskEditedListener {
     public ActivityHomeBinding binding;
 
@@ -38,7 +45,17 @@ public class HomeActivity extends AppCompatActivity implements OnTaskEditedListe
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        navigateFragment(new ProjectsFragment());
+
+        binding.ivInvitation.setVisibility(View.VISIBLE);
+        binding.ivInvitation.setOnClickListener(view ->{
+            navigateFragment(new InvitationFragment());
+            binding.ivInvitation.setVisibility(View.GONE);
+        });
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, new ProjectsFragment())
+                .addToBackStack(null)
+                .commit();
 
         binding.navHome.setOnClickListener(item -> {
             navigateFragment(new ProjectsFragment());
@@ -87,6 +104,9 @@ public class HomeActivity extends AppCompatActivity implements OnTaskEditedListe
     }
 
     @Override
+    public void onGoToInvitePeople(String projectId) {
+        navigateFragment(SendInvitationFragment.newInstance(projectId));
+    }
     public void onTaskEdited(String taskID) {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (currentFragment instanceof ProjectDetailsFragment) {

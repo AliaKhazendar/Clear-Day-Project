@@ -57,11 +57,13 @@ dependencies {
     // onBoard
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation 'com.tbuonomo:dotsindicator:4.3'
-
+    
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
     // Images
-    implementation 'com.github.bumptech.glide:glide:5.0.5'
+    
     annotationProcessor 'com.github.bumptech.glide:compiler:5.0.5'
     implementation 'com.google.firebase:firebase-storage:22.0.1'
     implementation 'com.cloudinary:cloudinary-android:3.1.2'
+    implementation 'com.github.bumptech.glide:glide:5.0.5'
 
 }
