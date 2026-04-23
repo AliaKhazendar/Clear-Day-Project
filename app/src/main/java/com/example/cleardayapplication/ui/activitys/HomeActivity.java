@@ -2,6 +2,7 @@ package com.example.cleardayapplication.ui.activitys;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,12 +16,22 @@ import com.example.cleardayapplication.databinding.ActivityHomeBinding;
 import com.example.cleardayapplication.domain.utils.OnGoToInvitePeopleListener;
 import com.example.cleardayapplication.ui.fragments.invitation.InvitationFragment;
 import com.example.cleardayapplication.ui.fragments.invitation.SendInvitationFragment;
+
+import com.example.cleardayapplication.databinding.ActivityHomeBindin
+import com.example.cleardayapplication.domain.model.Task;
+import com.example.cleardayapplication.domain.utils.OnTaskEditedListener;
+
+import com.example.cleardayapplication.ui.fragments.profile.*;
+
 import com.example.cleardayapplication.ui.fragments.project.AddProjectFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectDetailsFragment;
 import com.example.cleardayapplication.ui.fragments.project.ProjectsFragment;
 import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
+import com.example.cleardayapplication.ui.fragments.task.EditTasksInformationFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopleListener {
+public class HomeActivity extends AppCompatActivity implements OnTaskEditedListener {
     public ActivityHomeBinding binding;
 
     @Override
@@ -34,6 +45,7 @@ public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopl
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         binding.ivInvitation.setVisibility(View.VISIBLE);
         binding.ivInvitation.setOnClickListener(view ->{
             navigateFragment(new InvitationFragment());
@@ -48,8 +60,9 @@ public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopl
         binding.navHome.setOnClickListener(item -> {
             navigateFragment(new ProjectsFragment());
         });
-        binding.navProfile.setOnClickListener(item -> {
 
+        binding.navProfile.setOnClickListener( item ->{
+            navigateFragment(new ProfileFragment());
         });
 
         // floating action button
@@ -64,8 +77,8 @@ public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopl
             } else if (currentFragment instanceof ProjectDetailsFragment) {
                 ProjectDetailsFragment projectFragment = (ProjectDetailsFragment) currentFragment;
 
-                String projectId = projectFragment.getProjectId();  // بدك تضيف getter
-                String userId = projectFragment.getAuth().getCurrentUser().getUid();
+                String projectId = projectFragment.getProjectId();
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                 // اخفاء الزر قبل فتح Fragment
                 binding.fabAdd.setVisibility(View.GONE);
@@ -94,6 +107,17 @@ public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopl
     public void onGoToInvitePeople(String projectId) {
         navigateFragment(SendInvitationFragment.newInstance(projectId));
     }
+    public void onTaskEdited(String taskID) {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment instanceof ProjectDetailsFragment) {
+            EditTasksInformationFragment dialog = EditTasksInformationFragment.newInstance(taskID);
+            dialog.setOnTakEditedListener(() -> {
+                ((ProjectDetailsFragment) currentFragment).getTaskList();
+            });
+            dialog.show(getSupportFragmentManager(), "EditTaskDialog");
+        }
+    }
+
 }
 
 

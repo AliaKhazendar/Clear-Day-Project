@@ -3,6 +3,8 @@ package com.example.cleardayapplication.domain.model;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.util.List;
+
 public class Task {
     private String taskId;
     private String projectId;
@@ -14,6 +16,8 @@ public class Task {
     private String date;
     private String startTime;
     private String endTime;
+    private List<String> attachments; // روابط الملفات المرفقة
+
 
 
     // Empty constructor required for Firebase Firestore
@@ -33,6 +37,7 @@ public class Task {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
 
     // Getters and Setters
     public String getTaskId() { return taskId; }
@@ -78,5 +83,13 @@ public class Task {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public List<String> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<String> attachments) {
+        this.attachments = attachments;
     }
 }

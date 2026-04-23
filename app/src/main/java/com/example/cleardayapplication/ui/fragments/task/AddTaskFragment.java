@@ -1,27 +1,29 @@
 package com.example.cleardayapplication.ui.fragments.task;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.content.res.ColorStateList;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.Collections;
-import com.example.cleardayapplication.ui.activitys.HomeActivity;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Calendar;
+import java.io.InputStream;
 
 public class AddTaskFragment extends Fragment {
 
@@ -31,12 +33,17 @@ public class AddTaskFragment extends Fragment {
     private String projectId;
     private String userId;
 
-    private EditText etTaskName, etDate, etStart, etEnd, etTaskDescription;
-    private Button btnUrgent, btnRunning, btnOngoing, btnSave;
+    private EditText etTaskName, etTaskDescription;
+    private Button btnSave, btnAddAttachment;
+    private Button btnUrgent, btnRunning, btnOngoing;
 
-    private String selectedStatus = "Running"; // Default
+    private String selectedStatus = "Running"; // الحالة الافتراضية
+    private Uri attachmentUri;
 
     private FirebaseFirestore firestore;
+    private FirebaseAuth auth;
+
+    private ActivityResultLauncher<Intent> filePickerLauncher;
 
     public AddTaskFragment() {}
 
@@ -52,116 +59,89 @@ public class AddTaskFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+
+        if(getArguments() != null){
             projectId = getArguments().getString(ARG_PROJECT_ID);
             userId = getArguments().getString(ARG_USER_ID);
         }
+
         firestore = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
+        filePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if(result.getResultCode() == getActivity().RESULT_OK && result.getData() != null){
+                        attachmentUri = result.getData().getData();
+                        if(getContext() != null)
+                            Toast.makeText(getContext(), "Attachment selected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_add_task, container, false);
 
         etTaskName = view.findViewById(R.id.etTaskName);
         etTaskDescription = view.findViewById(R.id.etTaskDescription);
-        etDate = view.findViewById(R.id.etDate);
-        etStart = view.findViewById(R.id.etStart);
-        etEnd = view.findViewById(R.id.etEnd);
+        btnSave = view.findViewById(R.id.btnSave);
+        btnAddAttachment = view.findViewById(R.id.btnAddAttachment);
 
+        // أزرار اختيار الحالة
         btnUrgent = view.findViewById(R.id.btnUrgent);
         btnRunning = view.findViewById(R.id.btnRunning);
         btnOngoing = view.findViewById(R.id.btnOngoing);
-        btnSave = view.findViewById(R.id.btnSave);
 
-        // Board Selection
-        btnUrgent.setOnClickListener(v -> selectBoard("Urgent"));
-        btnRunning.setOnClickListener(v -> selectBoard("Running"));
-        btnOngoing.setOnClickListener(v -> selectBoard("Ongoing"));
+        btnAddAttachment.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            filePickerLauncher.launch(intent);
+        });
 
-        // DatePicker
-        etDate.setOnClickListener(v -> showDatePicker());
+        // Listener للحالات مع تغيير اللون
+        View.OnClickListener statusClickListener = v -> {
+            if(v == btnUrgent){
+                selectedStatus = "Urgent";
+                btnUrgent.setBackgroundColor(Color.RED);
+                btnRunning.setBackgroundColor(Color.LTGRAY);
+                btnOngoing.setBackgroundColor(Color.LTGRAY);
+            } else if(v == btnRunning){
+                selectedStatus = "Running";
+                btnRunning.setBackgroundColor(Color.GREEN);
+                btnUrgent.setBackgroundColor(Color.LTGRAY);
+                btnOngoing.setBackgroundColor(Color.LTGRAY);
+            } else if(v == btnOngoing){
+                selectedStatus = "Ongoing";
+                btnOngoing.setBackgroundColor(Color.parseColor("#800080")); // بنفسجي
+                btnUrgent.setBackgroundColor(Color.LTGRAY);
+                btnRunning.setBackgroundColor(Color.LTGRAY);
+            }
+        };
 
-        // TimePickers
-        etStart.setOnClickListener(v -> showTimePicker(etStart));
-        etEnd.setOnClickListener(v -> showTimePicker(etEnd));
+        btnUrgent.setOnClickListener(statusClickListener);
+        btnRunning.setOnClickListener(statusClickListener);
+        btnOngoing.setOnClickListener(statusClickListener);
 
         btnSave.setOnClickListener(v -> saveTask());
 
-        ImageView btnBack = view.findViewById(R.id.btnBack);
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> getParentFragmentManager().popBackStack());
-        }
-
-        // Initialize status selection colors
-        selectBoard(selectedStatus);
-
         return view;
-    }
-
-    private void selectBoard(String status) {
-        selectedStatus = status;
-
-        int activeColor = ContextCompat.getColor(requireContext(), R.color.purple); // Default active color
-        int inactiveColor = ContextCompat.getColor(requireContext(), R.color.light_gray);
-
-        if ("Urgent".equals(status)) activeColor = ContextCompat.getColor(requireContext(), R.color.red);
-        else if ("Running".equals(status)) activeColor = ContextCompat.getColor(requireContext(), R.color.green);
-
-        btnUrgent.setBackgroundTintList(ColorStateList.valueOf(status.equals("Urgent") ? activeColor : inactiveColor));
-        btnRunning.setBackgroundTintList(ColorStateList.valueOf(status.equals("Running") ? activeColor : inactiveColor));
-        btnOngoing.setBackgroundTintList(ColorStateList.valueOf(status.equals("Ongoing") ? activeColor : inactiveColor));
-    }
-
-    private void showDatePicker() {
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog dpd = new DatePickerDialog(requireContext(),
-                (view, y, m, d) -> etDate.setText(String.format("%02d/%02d/%04d", d, m + 1, y)),
-                year, month, day);
-        dpd.show();
-    }
-
-    private void showTimePicker(EditText et) {
-        final Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
-
-        TimePickerDialog tpd = new TimePickerDialog(requireContext(),
-                (view, h, m) -> {
-                    String amPm = (h >= 12) ? "PM" : "AM";
-                    int hour12 = h % 12;
-                    if (hour12 == 0) hour12 = 12;
-                    et.setText(String.format("%d:%02d %s", hour12, m, amPm));
-                }, hour, minute, false);
-        tpd.show();
     }
 
     private void saveTask() {
         String taskName = etTaskName.getText().toString().trim();
         String taskDescription = etTaskDescription.getText().toString().trim();
-        String date = etDate.getText().toString().trim();
-        String startTime = etStart.getText().toString().trim();
-        String endTime = etEnd.getText().toString().trim();
 
-        // Validation
-        if (taskName.isEmpty()) { etTaskName.setError("Enter task name"); return; }
-        if (taskDescription.isEmpty()) { etTaskDescription.setError("Enter description"); return; }
-        if (date.isEmpty()) { etDate.setError("Select date"); return; }
-        if (startTime.isEmpty()) { etStart.setError("Select start time"); return; }
-        if (endTime.isEmpty()) { etEnd.setError("Select end time"); return; }
+        if(taskName.isEmpty()){ etTaskName.setError("Enter task name"); return; }
+        if(taskDescription.isEmpty()){ etTaskDescription.setError("Enter description"); return; }
 
         Task task = new Task();
         task.setTitle(taskName);
         task.setDescription(taskDescription);
-        task.setDate(date);
-        task.setStartTime(startTime);
-        task.setEndTime(endTime);
         task.setProjectId(projectId);
         task.setUserId(userId);
         task.setStatus(selectedStatus);
@@ -170,22 +150,46 @@ public class AddTaskFragment extends Fragment {
         firestore.collection(Collections.TASKS)
                 .add(task)
                 .addOnSuccessListener(docRef -> {
-                    // Update document with its own ID for easier reference
                     String taskId = docRef.getId();
                     docRef.update("taskId", taskId);
-                    
-                    Toast.makeText(getContext(), "Task added successfully", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack(); 
+
+                    // رفع المرفق إذا تم اختياره
+                    if(attachmentUri != null) uploadAttachmentToTask(taskId, attachmentUri);
+
+                    if(getContext() != null)
+                        Toast.makeText(getContext(), "Task added successfully", Toast.LENGTH_SHORT).show();
+
+                    getParentFragmentManager().popBackStack();
                 })
-                .addOnFailureListener(e -> Toast.makeText(getContext(),
-                        "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    if(getContext() != null)
+                        Toast.makeText(getContext(), "Failed to add task: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if(getActivity() instanceof HomeActivity){
-            ((HomeActivity)getActivity()).binding.fabAdd.setVisibility(View.VISIBLE);
+    private void uploadAttachmentToTask(String taskId, Uri fileUri){
+        try{
+            InputStream is = getContext().getContentResolver().openInputStream(fileUri);
+            byte[] bytes = new byte[is.available()];
+            is.read(bytes);
+            is.close();
+            String base64 = android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
+
+            firestore.collection(Collections.TASKS)
+                    .document(taskId)
+                    .update("attachments", java.util.Collections.singletonList(base64))
+                    .addOnSuccessListener(aVoid -> {
+                        if(getContext() != null)
+                            Toast.makeText(getContext(), "Attachment uploaded!", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        if(getContext() != null)
+                            Toast.makeText(getContext(), "Failed to upload attachment: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } catch(Exception e){
+            e.printStackTrace();
+            if(getContext() != null)
+                Toast.makeText(getContext(), "Error reading file", Toast.LENGTH_SHORT).show();
         }
     }
 }
