@@ -3,6 +3,8 @@ package com.example.cleardayapplication.domain.model;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.ServerTimestamp;
 
+import java.util.List;
+
 public class Task {
     private String taskId;
     private String projectId;
@@ -11,6 +13,11 @@ public class Task {
     private String description;
     private String status;
     private String createdBy;
+    private String date;
+    private String startTime;
+    private String endTime;
+    private List<String> attachments; // روابط الملفات المرفقة
+
 
 
     // Empty constructor required for Firebase Firestore
@@ -18,15 +25,19 @@ public class Task {
     }
 
     // Full constructor
-    public Task(String taskId, String projectId, String userId, String status, String createdBy, String description, String title) {
+    public Task(String taskId, String projectId, String userId, String title, String description, String status, String createdBy, String date, String startTime, String endTime) {
         this.taskId = taskId;
         this.projectId = projectId;
         this.userId = userId;
+        this.title = title;
+        this.description = description;
         this.status = status;
         this.createdBy = createdBy;
-        this.description = description;
-        this.title = title;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
+
 
     // Getters and Setters
     public String getTaskId() { return taskId; }
@@ -50,4 +61,35 @@ public class Task {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public List<String> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<String> attachments) {
+        this.attachments = attachments;
+    }
 }

@@ -118,4 +118,5 @@ public class ProjectsFragment extends Fragment implements OnItemClicks {
                 .replace(R.id.fragment_container,ProjectDetailsFragment.newInstance(obj))
                 .commit();
     }
+
 }

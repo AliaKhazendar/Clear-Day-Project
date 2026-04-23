@@ -1,13 +1,14 @@
 package com.example.cleardayapplication.ui.adapters;
 
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-
+import com.example.cleardayapplication.R;
 import com.example.cleardayapplication.databinding.ItemProjectBinding;
 import com.example.cleardayapplication.domain.model.Project;
 import com.example.cleardayapplication.domain.utils.OnItemClicks;
@@ -21,14 +22,11 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
     private final OnItemClicks listener;
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
-
-    // ── Constructor ──────────────────────────────────────────
     public ProjectAdapter(List<Project> projectList, OnItemClicks listener) {
         this.projectList = projectList;
         this.listener = listener;
     }
 
-    // ── Adapter Methods ──────────────────────────────────────
     @NonNull
     @Override
     public ProjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,7 +50,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         notifyDataSetChanged();
     }
 
-    // ── ViewHolder ───────────────────────────────────────────
     public class ProjectViewHolder extends RecyclerView.ViewHolder {
 
         private final ItemProjectBinding binding;
@@ -63,36 +60,35 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
         }
 
         public void bind(Project project) {
-
-            // Project name
             binding.tvProjectTitle.setText(project.getName());
-
-            // Description
             binding.tvProjectDescription.setText(project.getDescription());
 
-            // Status badge
+            int color;
+            String statusText;
             if ("open".equalsIgnoreCase(project.getStatus())) {
-                binding.tvProjectStatus.setText("Open");
-                binding.tvProjectStatus.getBackground()
-                        .setTint(Color.parseColor("#4CAF50")); // green
+                statusText = itemView.getContext().getString(R.string.status_open);
+                color = ContextCompat.getColor(itemView.getContext(), R.color.green);
             } else {
-                binding.tvProjectStatus.setText("Closed");
-                binding.tvProjectStatus.getBackground()
-                        .setTint(Color.parseColor("#F44336")); // red
+                statusText = itemView.getContext().getString(R.string.status_closed);
+                color = ContextCompat.getColor(itemView.getContext(), R.color.red);
+            }
+
+            binding.tvProjectStatus.setText(statusText);
+            Drawable background = binding.tvProjectStatus.getBackground();
+            if (background != null) {
+                background.setTint(color);
             }
 
             fetchAdminName(project.getAdminId());
 
-            // Click listener
             binding.getRoot().setOnClickListener(v -> {
                 if (listener != null) listener.onCardItemClick(project);
             });
         }
 
         private void fetchAdminName(String adminId) {
-
             if (adminId == null || adminId.isEmpty()) {
-                binding.tvAdminName.setText("Unknown");
+                binding.tvAdminName.setText(itemView.getContext().getString(R.string.unknown));
                 return;
             }
 
@@ -102,14 +98,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectV
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             String adminName = documentSnapshot.getString("userName");
-                            binding.tvAdminName.setText(
-                                    adminName != null ? adminName : "Unknown");
+                            binding.tvAdminName.setText(adminName != null ? adminName : itemView.getContext().getString(R.string.unknown));
                         } else {
-                            binding.tvAdminName.setText("Unknown");
+                            binding.tvAdminName.setText(itemView.getContext().getString(R.string.unknown));
                         }
                     })
                     .addOnFailureListener(e ->
-                            binding.tvAdminName.setText("Unknown"));
+                            binding.tvAdminName.setText(itemView.getContext().getString(R.string.unknown)));
         }
     }
 }

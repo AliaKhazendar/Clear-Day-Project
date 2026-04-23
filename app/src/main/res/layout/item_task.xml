@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:backgroundTintMode="@drawable/shape_item_task"
-    android:padding="12dp">
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:padding="7dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/container"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/taskStatus"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="8dp">
 
             <TextView
                 android:id="@+id/taskTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/task_title"
+                android:textColor="@color/dark_blue"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -33,21 +39,45 @@
                 android:id="@+id/taskDesc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="@string/task_description"
+                android:textColor="@color/light_gray"
                 android:textSize="14sp" />
 
         </LinearLayout>
-
+        <ImageView
+            android:id="@+id/ivEditIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/ic_edit"
+            />
         <TextView
             android:id="@+id/taskStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="3dp"
+            android:background="@drawable/bg_status_badge_open"
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp"
             android:text="@string/task_status"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/ivEditIcon" />
+        <LinearLayout
+            android:id="@+id/attachmentsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/container"
+            app:layout_constraintStart_toStartOf="@id/container"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
