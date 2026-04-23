@@ -2,8 +2,6 @@ package com.example.cleardayapplication.ui.activitys;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,8 +15,6 @@ import com.example.cleardayapplication.domain.utils.OnGoToInvitePeopleListener;
 import com.example.cleardayapplication.ui.fragments.invitation.InvitationFragment;
 import com.example.cleardayapplication.ui.fragments.invitation.SendInvitationFragment;
 
-import com.example.cleardayapplication.databinding.ActivityHomeBindin
-import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.OnTaskEditedListener;
 
 import com.example.cleardayapplication.ui.fragments.profile.*;
@@ -30,8 +26,7 @@ import com.example.cleardayapplication.ui.fragments.task.AddTaskFragment;
 import com.example.cleardayapplication.ui.fragments.task.EditTasksInformationFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopleListener {
-public class HomeActivity extends AppCompatActivity implements OnTaskEditedListener {
+public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopleListener ,OnTaskEditedListener {
     public ActivityHomeBinding binding;
 
     @Override

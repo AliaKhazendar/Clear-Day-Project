@@ -59,6 +59,7 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks{
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         goToInvitePeopleListener = (OnGoToInvitePeopleListener) context;
+        this.editTaskListener = (OnTaskEditedListener) context;
     }
 
     public void setOnAddTaskListener(OnAddTaskListener listener){
@@ -66,11 +67,6 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks{
 
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.editTaskListener = (OnTaskEditedListener) context;
-    }
 
     private List<Task> tasksList = new ArrayList<>();
 
