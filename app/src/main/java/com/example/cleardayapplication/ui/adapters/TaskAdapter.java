@@ -37,8 +37,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
 
 
-    public void updateList(List<Task> taskList){
-        this.taskList = taskList;
+    public void updateList(List<Task> newList){
+        this.taskList.clear();
+        this.taskList.addAll(newList);
         notifyDataSetChanged();
     }
 
