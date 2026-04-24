@@ -73,6 +73,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             binding.ivEditIcon.setOnClickListener(view ->{
                 onEditTaskClick.onTaskEdited(task.getTaskId());
             });
+            binding.ivDeleteIcon.setOnClickListener(view -> {
+                onEditTaskClick.onTaskDeleted(task.getTaskId());
+            });
 
             int color;
             String status = task.getStatus();

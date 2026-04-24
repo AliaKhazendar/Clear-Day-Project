@@ -68,9 +68,10 @@ public class ProfileFragment extends Fragment {
         config.put("cloud_name", "ddwdujzxz");
 
         try {
+            // استخدام اسم التطبيق كـ ID لتهيئة Cloudinary مرة واحدة فقط
             MediaManager.init(requireContext(), config);
-        } catch (IllegalStateException e) {
-            // already initialized
+        } catch (Exception e) {
+            // Exception ignored if already initialized
         }
 
         FirebaseUser user = mAuth.getCurrentUser();
@@ -78,7 +79,9 @@ public class ProfileFragment extends Fragment {
             userId = user.getUid();
             loadUserData();
         } else {
-            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            }
         }
 
         binding.btnEdit.setOnClickListener(v -> {
