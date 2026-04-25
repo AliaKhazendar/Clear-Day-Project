@@ -37,8 +37,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
 
 
-    public void updateList(List<Task> taskList){
-        this.taskList = taskList;
+    public void updateList(List<Task> newList){
+        this.taskList.clear();
+        this.taskList.addAll(newList);
         notifyDataSetChanged();
     }
 
@@ -72,6 +73,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             binding.taskDesc.setText(task.getDescription());
             binding.ivEditIcon.setOnClickListener(view ->{
                 onEditTaskClick.onTaskEdited(task.getTaskId());
+            });
+            binding.ivDeleteIcon.setOnClickListener(view -> {
+                onEditTaskClick.onTaskDeleted(task.getTaskId());
             });
 
             int color;

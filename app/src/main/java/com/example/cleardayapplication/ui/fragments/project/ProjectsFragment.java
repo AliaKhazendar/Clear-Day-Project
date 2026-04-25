@@ -113,9 +113,11 @@ public class ProjectsFragment extends Fragment implements OnItemClicks {
 
     @Override
     public void onCardItemClick(Object obj) {
+        // نستخدمFragmentManager مع addToBackStack لضمان عودة الزر للعمل
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container,ProjectDetailsFragment.newInstance(obj))
+                .replace(R.id.fragment_container, ProjectDetailsFragment.newInstance(obj))
+                .addToBackStack(null)
                 .commit();
     }
 

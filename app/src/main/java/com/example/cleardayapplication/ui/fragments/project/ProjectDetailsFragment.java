@@ -47,19 +47,19 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks{
     FirebaseAuth auth;
     FirebaseFirestore firestore;
     private OnAddTaskListener addTaskListener;
+  
     private OnGoToInvitePeopleListener goToInvitePeopleListener;
+  
     private OnTaskEditedListener editTaskListener;
     public interface OnAddTaskListener {
         void onAddTaskClicked(String projectId, String userId);
     }
 
-
-    // Only ONE onAttach — assign both
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         goToInvitePeopleListener = (OnGoToInvitePeopleListener) context;
-        editTaskListener = (OnTaskEditedListener) context;
+        this.editTaskListener = (OnTaskEditedListener) context;
     }
 
     public void setOnAddTaskListener(OnAddTaskListener listener){
@@ -149,31 +149,43 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks{
     }
 
     public void getTaskList(){
-       // get task list from fire store
+        if (projectId == null) {
+            Log.e("ProjectDetails", "projectId is NULL");
+            return;
+        }
+
         binding.progressLoaderPD.setVisibility(VISIBLE);
+        
+        // التأكد من اسم الكولكشن واسم الحقل
         firestore.collection(Collections.TASKS)
-                .whereEqualTo(Collections.PROJECT_ID,projectId)
+                .whereEqualTo("projectId", projectId) // نستخدم السلسلة النصية مباشرة للتأكد
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    Log.d("TAG", "getTaskList: 00");
                     binding.progressLoaderPD.setVisibility(View.GONE);
-
+                    
                     if(!queryDocumentSnapshots.isEmpty()){
-                        tasksList = queryDocumentSnapshots.toObjects(Task.class);
-                        Log.d("TAG", "getTaskList: "+ tasksList.size());
-                        adapter.updateList(tasksList);
+                        List<Task> newList = queryDocumentSnapshots.toObjects(Task.class);
+                        Log.d("ProjectDetails", "Tasks received from Firebase: " + newList.size());
+                        
+                        // تحديث القائمة داخل الأدابتر
+                        adapter.updateList(newList);
+                        
                         binding.emptyStatePD.setVisibility(View.GONE);
+                        binding.tasksRecycler.setVisibility(View.VISIBLE);
                     }else{
+                        Log.d("ProjectDetails", "No tasks found for projectId: " + projectId);
+                        tasksList.clear();
+                        adapter.updateList(tasksList);
                         binding.emptyStatePD.setVisibility(VISIBLE);
                     }
 
                 }).addOnFailureListener(exception->{
                     binding.progressLoaderPD.setVisibility(View.GONE);
+                    Log.e("ProjectDetails", "Error fetching tasks", exception);
                     Toast.makeText(getContext(),
-                            "Failed to load projects: " + exception.getMessage(),
+                            "Failed to load tasks: " + exception.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 });
-
     }
     private void setupMenu() {
 

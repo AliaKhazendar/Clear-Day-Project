@@ -59,8 +59,6 @@
     <string name="add_new_item">Add New Item</string>
     <string name="description_cannot_be_empty">⚠ Description cannot be empty</string>
     <string name="title_cannot_be_empty">⚠ Title cannot be empty</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="unknown">Unknown</string>
     <string name="invite_new_people_to_work_together">Invite New People to Work Together</string>
     <string name="invite_now">Invite Now</string>
@@ -74,6 +72,8 @@
     <string name="edit">Edit</string>
     <string name="bee">🐝</string>
     <string name="invalid_request_to_edit">Invalid Request to Edit</string>
+
+
 
 
 </resources>
