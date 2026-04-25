@@ -29,17 +29,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private OnItemClicks onItemClicks;
     private OnTaskEditedListener onEditTaskClick;
 
-    public TaskAdapter(List<Task> taskList, OnItemClicks onItemClicks, OnTaskEditedListener onEditTaskClick){
+    public TaskAdapter(List<Task> taskList, OnItemClicks onItemClicks, OnTaskEditedListener onEditTaskClick) {
         this.taskList = taskList;
         this.onItemClicks = onItemClicks;
         this.onEditTaskClick = onEditTaskClick;
     }
 
 
-
-    public void updateList(List<Task> newList){
-        this.taskList.clear();
-        this.taskList.addAll(newList);
+    public void updateList(List<Task> taskList) {
+        this.taskList = taskList;
         notifyDataSetChanged();
     }
 
@@ -68,14 +66,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             this.binding = binding;
         }
 
-        public void bind(Task task){
-            binding.taskTitle.setText(task.getTitle());
-            binding.taskDesc.setText(task.getDescription());
-            binding.ivEditIcon.setOnClickListener(view ->{
-                onEditTaskClick.onTaskEdited(task.getTaskId());
-            });
-            binding.ivDeleteIcon.setOnClickListener(view -> {
-                onEditTaskClick.onTaskDeleted(task.getTaskId());
+        public void bind(Task task) {
+            // ✅ Null-safe binding
+            binding.taskTitle.setText(task.getTitle() != null ? task.getTitle() : "No title");
+            binding.taskDesc.setText(task.getDescription() != null ? task.getDescription() : "No description");
+
+            binding.ivEditIcon.setOnClickListener(view -> {
+                if (task.getTaskId() != null)
+                    onEditTaskClick.onTaskEdited(task.getTaskId());
             });
 
             int color;
@@ -91,7 +89,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 binding.taskStatus.setText("Ongoing");
                 color = ContextCompat.getColor(itemView.getContext(), R.color.purple);
             } else {
-                binding.taskStatus.setText(status != null ? status : "");
+                binding.taskStatus.setText(status != null ? status : "Unknown");
                 color = ContextCompat.getColor(itemView.getContext(), R.color.light_gray);
             }
 
@@ -99,38 +97,32 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 binding.taskStatus.getBackground().setTint(color);
             }
 
-            // عرض الملفات المرفقة
+            // Attachments
             binding.attachmentsContainer.removeAllViews();
-            if(task.getAttachments() != null){
-                for(String base64 : task.getAttachments()){
+            if (task.getAttachments() != null) {
+                for (String base64 : task.getAttachments()) {
                     try {
                         byte[] decoded = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap bmp = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                        if (bmp == null) continue;
 
                         ImageView img = new ImageView(itemView.getContext());
                         img.setImageBitmap(bmp);
 
-                        // حجم صغير 60x60 dp
-                        int sizeInDp = 60;
                         float scale = itemView.getContext().getResources().getDisplayMetrics().density;
-                        int sizeInPx = (int) (sizeInDp * scale + 0.5f);
+                        int sizeInPx = (int) (60 * scale + 0.5f);
 
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                sizeInPx,
-                                sizeInPx
-                        );
-                        params.setMargins(4, 4, 4, 4); // مسافة صغيرة بين الصور
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(sizeInPx, sizeInPx);
+                        params.setMargins(4, 4, 4, 4);
                         img.setLayoutParams(params);
                         img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
                         binding.attachmentsContainer.addView(img);
-
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
-            }
         }
     }
+}
