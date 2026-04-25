@@ -1,0 +1,296 @@
+# User Story
+
+## 1. User Roles
+
+### 1.1 Primary Users
+
+1️⃣ Team Leader
+Responsible for:
+Creating project boards
+Assigning tasks
+Monitoring team progress
+Managing deadlines and overdue tasks
+
+2️⃣ Team Member
+Responsible for:
+Creating and managing tasks
+Updating task status
+Collaborating with the team
+
+### 1.2 Secondary User
+3️⃣ Student in College
+Uses the application to:
+Manage academic assignments
+Track deadlines
+Collaborate on group projects
+
+## 2. Product Backlog Overview
+
+Total User Stories: 17
+Must-Have (Priority 1): 10
+Should-Have (Priority 2): 4
+Nice-to-Have (Priority 3): 3
+
+## 3. Must-Have User Stories (Priority 1)
+
+Story #1: User Registration
+Priority: Must-Have
+
+Story Points: 5
+
+User Story
+
+As a new user,
+I want to create an account,
+So that I can access the system.
+
+Acceptance Criteria
+
+- Valid Registration
+Given I am on the registration screen
+When I enter a valid name, email, and password
+Then my account should be created successfully
+
+- Duplicate Email Validation
+Given I enter an already registered email
+When I submit the form
+Then I should see the message: “Email already exists”
+
+- Password Validation
+Given I enter a weak password
+When I submit the form
+Then I should see the message: “Password must be at least 8 characters”
+
+- Session Persistence
+Given registration is successful
+When I refresh or reopen the application
+Then I should remain authenticated
+
+---
+
+Story #2: User Login
+Priority: Must-Have
+Story Points: 3
+
+User Story
+
+As a registered user,
+I want to log in securely,
+So that I can manage my tasks and projects.
+
+Acceptance Criteria
+
+- Successful Login
+Given I am registered
+When I enter correct credentials
+Then I should be logged in
+
+- Invalid Credentials Handling
+Given I enter incorrect credentials
+When I submit
+Then I should see the message: “Invalid email or password”
+
+- Session Persistence
+Given I am logged in
+When I close and reopen the application
+Then my session should persist
+---
+Story #3: View User Projects
+Priority: Must-Have
+Story Points: 5
+
+User Story
+
+As a logged-in user,
+I want to see my projects,
+So that I can do the task.
+---
+Story #4: Create Task
+Priority: Must-Have
+
+Story Points: 5
+
+User Story
+
+- Access Task Creation Form
+Given I am logged in
+When I click “Add Task”
+Then a task creation form should appear
+
+- Successful Task Creation
+Given I enter a valid task title
+When I save
+Then the task should appear in the “To Do” column
+
+- Empty Title Validation
+Given the title field is empty
+When I save
+Then I should see the message: “Task title is required”
+
+Acceptance Criteria
+
+- Access Task Creation Form
+Given I am logged in
+When I click “Add Task”
+Then a task creation form should appear
+
+- Successful Task Creation
+Given I enter a valid task title
+When I save
+Then the task should appear in the “To Do” column
+
+- Empty Title Validation
+Given the title field is empty
+When I save
+Then I should see the message: “Task title is required”
+
+Story #5: Update project Information
+Priority: Must-Have
+
+Story Points: 3
+
+User Story
+
+As a team member,
+I want to update project details (title and description),
+So that I can modify the information.
+---
+Story #6: View Current Tasks
+Priority: Must-Have
+Story Points: 3
+
+User Story
+
+As a team member,
+I want to see tasks,
+So that I can focus on my responsibilities.
+
+Acceptance Criteria
+
+- View project Tasks
+Given I am logged in
+When I click on the project card,
+Then I should only do tasks that relate to this project,
+
+- No Tasks Case
+Given that no tasks are in the project
+When I open the page
+Then I should see the message: “No tasks found”
+---
+Story #7: Create Project Board
+Priority: Must-Have
+Story Points: 5
+
+User Story
+
+As a team leader,
+I want to create a project board,
+So that I can organize team work.
+---
+Story #8: Send Invitation
+Priority: Must-Have
+Story Points: 5
+
+User Story
+
+As a team leader,
+I want to add a new member to the project,
+So that we can work all together as a team.
+
+Acceptance Criteria
+
+- Successful Assignment
+Given I am logged in as a Team Leader
+When I open the project details, I want to add a user
+Then it should appear in the Project details menu
+
+- Sending Invitation
+Given I am in the send invitation screen
+When I search by email, and click on send 
+Then the other member should receive the invitation
+
+- Role-Based Restriction
+Given I am not a Team Leader
+When I attempt to send an invitation
+Then the system should deny the action
+---
+Story #9: Receive Invitation 
+Priority: Must-Have
+Story Points: 5
+
+User Story
+
+As a team member,
+I want to see sent invitations,
+So that I can accept them.
+
+Acceptance Criteria
+
+- Successful Assignment
+Given I am logged in as a Team Member
+When I open the home screen
+Then I should find the invitation icon
+
+- Accepting the Invitation
+Given that I am in the invitations screen
+When I click on accept
+Then I will have access to the project and its data
+---
+Story #10: Mange the Profile
+Priority: Must-Have
+Story Points: 5
+
+User Story
+
+As a logged user,
+I want to open a profile screen,
+So that I can view and update my information.
+
+## 4. Should-Have User Stories (Priority 2)
+---
+Story #11: Edit Task
+Story Points: 3
+
+As a team member,
+I want to edit tasks,
+So that I can update task details.
+---
+Story #12: Delete Task
+Story Points: 2
+As a team member,
+I want to delete tasks,
+So that I can remove unnecessary items.
+---
+Story #13: Attach files
+Story Points: 5
+As a team member,
+I want to attach a file when I add a task,
+So that I can describe the task more professionally.
+---
+Story #14: Monitor Project Progress
+Story Points: 5
+
+As a team leader,
+I want to monitor overall progress,
+So that I can evaluate team performance.
+## 5. Nice-to-Have User Stories (Priority 3)
+---
+Story #15: Receive Notifications
+Story Points: 8
+
+As a user,
+I want to receive notifications,
+So that I do not miss important updates.
+---
+Story #16: Collaborate on Group Assignments
+Story Points: 5
+
+As a student,
+I want to collaborate with classmates,
+So that we can complete group projects efficiently.
+---
+Story #17: Add Comments
+Story Points: 5
+As a team member,
+I want to comment on tasks,
+So that I can communicate with my team.
