@@ -8,7 +8,14 @@
         android:id="@+id/menu_delete_project"
         android:title="@string/project_delete"/>
 
+<!--    <item-->
+<!--        android:id="@+id/menu_add_task"-->
+<!--        android:title="@string/task_add"/>-->
     <item
         android:id="@+id/menu_delete_all_tasks"
         android:title="@string/project_delete_all_tasks"/>
+
+    <item
+        android:id="@+id/menu_invite_new_user"
+        android:title="@string/invite_a_new_user"/>
 </menu>

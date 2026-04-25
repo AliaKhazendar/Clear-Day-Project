@@ -2,7 +2,7 @@ package com.example.cleardayapplication.ui.fragments.project;
 
 import static android.view.View.VISIBLE;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,34 +23,49 @@ import com.example.cleardayapplication.databinding.FragmentProjectDetailesBindin
 import com.example.cleardayapplication.domain.model.Project;
 import com.example.cleardayapplication.domain.model.Task;
 import com.example.cleardayapplication.domain.utils.Collections;
+import com.example.cleardayapplication.domain.utils.OnGoToInvitePeopleListener;
 import com.example.cleardayapplication.domain.utils.OnItemClicks;
+import com.example.cleardayapplication.domain.utils.OnTaskEditedListener;
 import com.example.cleardayapplication.ui.adapters.TaskAdapter;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
 
+    private static final String TAG        = "PROJECT_DETAILS";
     private static final String PROJECT_ID = "project_id";
 
-    private String projectId;
+    private String    projectId;
     private TaskAdapter adapter;
-    FirebaseAuth auth;
+    FirebaseAuth      auth;
     FirebaseFirestore firestore;
 
+    private OnAddTaskListener          addTaskListener;
+    private OnGoToInvitePeopleListener goToInvitePeopleListener;
+    private OnTaskEditedListener       editTaskListener;
+
+    public interface OnAddTaskListener {
+        void onAddTaskClicked(String projectId, String userId);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        goToInvitePeopleListener = (OnGoToInvitePeopleListener) context;
+        editTaskListener         = (OnTaskEditedListener) context;
+    }
+
+    public void setOnAddTaskListener(OnAddTaskListener listener) {
+        this.addTaskListener = listener;
+    }
+
     private List<Task> tasksList = new ArrayList<>();
-
-
     private FragmentProjectDetailesBinding binding;
 
-    public ProjectDetailsFragment() {
-        // Required empty public constructor
-    }
+    public ProjectDetailsFragment() {}
 
     public static ProjectDetailsFragment newInstance(Object obj) {
         ProjectDetailsFragment fragment = new ProjectDetailsFragment();
@@ -59,7 +75,6 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
             args.putString(PROJECT_ID, p.getProjectId());
             fragment.setArguments(args);
         }
-
         return fragment;
     }
 
@@ -69,104 +84,136 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
         if (getArguments() != null) {
             projectId = getArguments().getString(PROJECT_ID);
         }
+        Log.d(TAG, "onCreate — projectId: " + projectId);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentProjectDetailesBinding
-                .inflate(inflater, container, false);
-        auth = FirebaseAuth.getInstance();
+        binding   = FragmentProjectDetailesBinding.inflate(inflater, container, false);
+        auth      = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        getProjectDetails();
         setupRecyclerView();
-        getTaskList();
-
+        loadProjectAndTasks();
         setupMenu();
 
         return binding.getRoot();
     }
 
-    private void getProjectDetails() {
-        if (projectId == null) return;
+    // load project info, then get tasksId array
+    // ─── Simpler: query Task collection directly by projectId ─────────────────
+    public void loadProjectAndTasks() {
+        if (projectId == null || projectId.isEmpty()) {
+            Log.e(TAG, "projectId is NULL — aborting load");
+            return;
+        }
 
         binding.progressLoaderPD.setVisibility(View.VISIBLE);
+        binding.emptyStatePD.setVisibility(View.GONE);
+
+        // Step 1: load project info (name, description)
         firestore.collection(Collections.PROJECTS)
                 .document(projectId)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    binding.progressLoaderPD.setVisibility(View.GONE);
-                    if (documentSnapshot.exists()) {
-                        Project project = documentSnapshot.toObject(Project.class);
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        Project project = snapshot.toObject(Project.class);
                         if (project != null) {
-                            // تحديث واجهة المستخدم بالبيانات المجلوبة
                             binding.projectName.setText(project.getName());
                             binding.projectDescription.setText(project.getDescription());
                         }
                     }
                 })
-                .addOnFailureListener(e -> {
-                    binding.progressLoaderPD.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Error loading project details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
+                .addOnFailureListener(e ->
+                        Log.e(TAG, "Failed to load project info: " + e.getMessage()));
 
-    void setupRecyclerView(){
-
-        adapter = new TaskAdapter(tasksList, this);
-
-        binding.tasksRecycler.setLayoutManager(
-                new LinearLayoutManager(getContext()));
-        binding.tasksRecycler.setAdapter(adapter);
-
-    }
-
-    void getTaskList(){
-       // get task list from fire store
-        binding.progressLoaderPD.setVisibility(VISIBLE);
+        // Step 2: query Task collection directly by projectId field
         firestore.collection(Collections.TASKS)
-                .whereArrayContains(Collections.PROJECT_ID,projectId)
+                .whereEqualTo("projectId", projectId)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-
+                .addOnSuccessListener(querySnapshot -> {
                     binding.progressLoaderPD.setVisibility(View.GONE);
 
-                    if(!queryDocumentSnapshots.isEmpty()){
-                        tasksList = queryDocumentSnapshots.toObjects(Task.class);
-                        adapter.updateList(tasksList);
-                    }else{
-                        binding.emptyStatePD.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Query returned: " + querySnapshot.size() + " tasks");
+
+                    // Log each document for debugging
+                    for (var doc : querySnapshot.getDocuments()) {
+                        Log.d(TAG, "Doc ID: " + doc.getId() + " | data: " + doc.getData());
                     }
 
-                }).addOnFailureListener(exception->{
+                    if (!querySnapshot.isEmpty()) {
+                        tasksList = querySnapshot.toObjects(Task.class);
+                        Log.d(TAG, "tasksList size after parse: " + tasksList.size());
+                        for (Task t : tasksList) {
+                            Log.d(TAG, "  → title='" + t.getTitle() + "' status='" + t.getStatus() + "' id='" + t.getTaskId() + "'");
+                        }
+                        adapter.updateList(tasksList);
+                        binding.emptyStatePD.setVisibility(View.GONE);
+                    } else {
+                        Log.d(TAG, "No tasks found for projectId: " + projectId);
+                        binding.emptyStatePD.setVisibility(View.VISIBLE);
+                    }
+                })
+                .addOnFailureListener(e -> {
                     binding.progressLoaderPD.setVisibility(View.GONE);
+                    Log.e(TAG, "Failed to load tasks: " + e.getMessage());
                     Toast.makeText(getContext(),
-                            "Failed to load projects: " + exception.getMessage(),
+                            "Failed to load tasks: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 });
-
     }
+
+    // query Task collection using the IDs
+    private void loadTasksByIds(List<String> taskIds) {
+        // Firestore whereIn supports max 10 — handle pagination if needed
+        // For now assuming <= 10 tasks
+        firestore.collection(Collections.TASKS)
+                .whereIn("taskId", taskIds)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+
+                    if (!querySnapshot.isEmpty()) {
+                        tasksList = querySnapshot.toObjects(Task.class);
+                        Log.d(TAG, "Tasks loaded: " + tasksList.size());
+                        adapter.updateList(tasksList);
+                        binding.emptyStatePD.setVisibility(View.GONE);
+                    } else {
+                        Log.d(TAG, "No matching tasks found in Task collection");
+                        binding.emptyStatePD.setVisibility(VISIBLE);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+                    Log.e(TAG, "Failed to load tasks: " + e.getMessage());
+                    Toast.makeText(getContext(), "Failed to load tasks: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    void setupRecyclerView() {
+        tasksList = new ArrayList<>();
+        adapter = new TaskAdapter(tasksList, this, editTaskListener);
+        binding.tasksRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.tasksRecycler.setAdapter(adapter);
+        Log.d(TAG, "RecyclerView setup done");
+    }
+
     private void setupMenu() {
-
         binding.actionsMenu.setOnClickListener(v -> {
-
             PopupMenu popup = new PopupMenu(requireContext(), binding.actionsMenu);
-
             popup.getMenuInflater().inflate(R.menu.task_menu, popup.getMenu());
 
             popup.setOnMenuItemClickListener(item -> {
-
                 int id = item.getItemId();
 
                 if (id == R.id.menu_update_project) {
-
-                    firestore.collection(Collections.PROJECTS).document(projectId).get()
-                            .addOnSuccessListener(documentSnapshot -> {
-                                Project project = documentSnapshot.toObject(Project.class);
-                                if (project != null) {
-                                    showEditProjectDialog(project);
-                                }
+                    firestore.collection(Collections.PROJECTS)
+                            .document(projectId)
+                            .get()
+                            .addOnSuccessListener(snapshot -> {
+                                Project project = snapshot.toObject(Project.class);
+                                if (project != null) showEditProjectDialog(project);
                             });
                     return true;
 
@@ -178,7 +225,13 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
                             .setNegativeButton("Cancel", null)
                             .show();
                     return true;
+
+                } else if (id == R.id.menu_invite_new_user) {
+                    goToInvitePeopleListener.onGoToInvitePeople(projectId);
+                    return true;
+
                 } else if (id == R.id.menu_delete_all_tasks) {
+                    // implement if needed
                     return true;
                 }
 
@@ -188,99 +241,89 @@ public class ProjectDetailsFragment extends Fragment implements OnItemClicks {
             popup.show();
         });
     }
-    // go to task details
+
     @Override
     public void onCardItemClick(Object obj) {
-
+        // navigate to task details screen
     }
-    // update function
+
     public void showEditProjectDialog(Project project) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getLayoutInflater().inflate(R.layout.dialog_update_project, null);
 
-        EditText inputDesc = view.findViewById(R.id.project_description_update);
         EditText inputTitle = view.findViewById(R.id.project_title_update);
+        EditText inputDesc  = view.findViewById(R.id.project_description_update);
 
         inputTitle.setText(project.getName());
         inputDesc.setText(project.getDescription());
 
-        builder.setView(view)
+        new AlertDialog.Builder(getActivity())
+                .setView(view)
                 .setTitle("Update Project")
-                .setPositiveButton("Save", (dialog, id) -> {
-                    String newTitle = inputTitle.getText().toString();
-                    String newDesc = inputDesc.getText().toString();
-                    updateProjectInDatabase(newTitle, newDesc);
-                })
+                .setPositiveButton("Save", (dialog, id) ->
+                        updateProjectInDatabase(
+                                inputTitle.getText().toString().trim(),
+                                inputDesc.getText().toString().trim()))
                 .setNegativeButton("Cancel", null)
                 .show();
     }
-    public void updateProjectInDatabase(String projectName, String projectDescription){
-            if (projectId == null) return;
 
-            binding.progressLoaderPD.setVisibility(View.VISIBLE);
+    public void updateProjectInDatabase(String projectName, String projectDescription) {
+        if (projectId == null) return;
 
-            firestore.collection(Collections.PROJECTS)
-                    .document(projectId)
-                    .update(Collections.PROJECT_NAME, projectName, Collections.PROJECT_DESCRIPTION, projectDescription)
-                    .addOnSuccessListener(aVoid -> {
-                        binding.progressLoaderPD.setVisibility(View.GONE);
-                        Toast.makeText(getContext(), "Project updated successfully", Toast.LENGTH_SHORT).show();
-                        getProjectDetails();
-                    })
-                    .addOnFailureListener(e -> {
-                        binding.progressLoaderPD.setVisibility(View.GONE);
-                        Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        }
+        binding.progressLoaderPD.setVisibility(View.VISIBLE);
+
+        firestore.collection(Collections.PROJECTS)
+                .document(projectId)
+                .update(Collections.PROJECT_NAME, projectName,
+                        Collections.PROJECT_DESCRIPTION, projectDescription)
+                .addOnSuccessListener(aVoid -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Project updated successfully", Toast.LENGTH_SHORT).show();
+                    loadProjectAndTasks(); // reload after update
+                })
+                .addOnFailureListener(e -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void deleteProjectAndTasks() {
         if (projectId == null) return;
 
         binding.progressLoaderPD.setVisibility(VISIBLE);
 
-        //  حذف كل المهام المرتبطة بالمشروع
-        firestore.collection(Collections.TASKS)
-                .whereArrayContains(Collections.PROJECT_ID, projectId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<String> taskIds = new ArrayList<>();
-                    for (var doc : queryDocumentSnapshots.getDocuments()) {
-                        taskIds.add(doc.getId());
-                    }
+        // Collect task IDs currently shown
+        List<String> taskIdsToDelete = new ArrayList<>();
+        for (Task t : tasksList) {
+            if (t.getTaskId() != null && !t.getTaskId().isEmpty()) {
+                taskIdsToDelete.add(t.getTaskId());
+            }
+        }
 
-                    // حذف كل المهام واحد واحد
-                    for (String taskId : taskIds) {
-                        firestore.collection(Collections.TASKS).document(taskId).delete();
-                    }
+        // Delete each task document
+        for (String taskId : taskIdsToDelete) {
+            firestore.collection(Collections.TASKS).document(taskId).delete()
+                    .addOnFailureListener(e -> Log.e(TAG, "Failed to delete task " + taskId + ": " + e.getMessage()));
+        }
 
-                    // بعد حذف المهام، حذف المشروع نفسه
-                    firestore.collection(Collections.PROJECTS)
-                            .document(projectId)
-                            .delete()
-                            .addOnSuccessListener(aVoid -> {
-                                binding.progressLoaderPD.setVisibility(View.GONE);
-                                Toast.makeText(getContext(),
-                                        "Project and its tasks deleted successfully",
-                                        Toast.LENGTH_SHORT).show();
-
-                                // ارجع لشاشة الهوم
-                                getParentFragmentManager()
-                                        .beginTransaction()
-                                        .replace(R.id.fragment_container, new ProjectsFragment())
-                                        .commit();
-                            })
-                            .addOnFailureListener(e -> {
-                                binding.progressLoaderPD.setVisibility(View.GONE);
-                                Toast.makeText(getContext(),
-                                        "Failed to delete project: " + e.getMessage(),
-                                        Toast.LENGTH_SHORT).show();
-                            });
-
+        // Delete the project document itself
+        firestore.collection(Collections.PROJECTS)
+                .document(projectId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    binding.progressLoaderPD.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Project deleted successfully", Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, new ProjectsFragment())
+                            .commit();
                 })
                 .addOnFailureListener(e -> {
                     binding.progressLoaderPD.setVisibility(View.GONE);
-                    Toast.makeText(getContext(),
-                            "Failed to delete tasks: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed to delete project: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+    public String getProjectId() { return projectId; }
+    public FirebaseAuth getAuth() { return auth; }
 }

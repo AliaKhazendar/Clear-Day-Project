@@ -42,6 +42,7 @@
     <string name="actions_menu">actions(update/delete/delete all tasks)</string>
     <string name="project_update">Update</string>
     <string name="project_delete">Delete</string>
+    <string name="task_add">Add Task</string>
     <string name="project_delete_all_tasks">Delete All Tasks</string>
 
     <string name="status_closed">Closed</string>
@@ -58,6 +59,21 @@
     <string name="add_new_item">Add New Item</string>
     <string name="description_cannot_be_empty">⚠ Description cannot be empty</string>
     <string name="title_cannot_be_empty">⚠ Title cannot be empty</string>
+    <string name="unknown">Unknown</string>
+    <string name="invite_new_people_to_work_together">Invite New People to Work Together</string>
+    <string name="invite_now">Invite Now</string>
+    <string name="email">Email</string>
+    <string name="user_name">User Name</string>
+    <string name="invite_a_new_user">Invite a new user</string>
+    <string name="no_pending_invitations">No Pending Invitations</string>
+    <string name="current_invitations">Current Invitations</string>
+    <string name="accept">Accept</string>
+    <string name="edit_task_information">Edit Task Information</string>
+    <string name="edit">Edit</string>
+    <string name="bee">🐝</string>
+    <string name="invalid_request_to_edit">Invalid Request to Edit</string>
+
+
 
 
 </resources>

@@ -1,36 +1,33 @@
 package com.example.cleardayapplication.domain.model;
 
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.ServerTimestamp;
+import com.google.firebase.firestore.PropertyName;
+
+import java.util.List;
 
 public class Task {
+
     private String taskId;
-    private String projectId;
-    private String userId;
     private String title;
     private String description;
+    private String projectId;
+    private String userId;
     private String status;
     private String createdBy;
+    private List<String> attachments;
+    private Object date;
+    private Object startTime;
+    private Object endTime;
 
+    public Task() {} // required for Firestore
 
-    // Empty constructor required for Firebase Firestore
-    public Task() {
-    }
-
-    // Full constructor
-    public Task(String taskId, String projectId, String userId, String status, String createdBy, String description, String title) {
-        this.taskId = taskId;
-        this.projectId = projectId;
-        this.userId = userId;
-        this.status = status;
-        this.createdBy = createdBy;
-        this.description = description;
-        this.title = title;
-    }
-
-    // Getters and Setters
     public String getTaskId() { return taskId; }
     public void setTaskId(String taskId) { this.taskId = taskId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public String getProjectId() { return projectId; }
     public void setProjectId(String projectId) { this.projectId = projectId; }
@@ -44,10 +41,15 @@ public class Task {
     public String getCreatedBy() { return createdBy; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public List<String> getAttachments() { return attachments; }
+    public void setAttachments(List<String> attachments) { this.attachments = attachments; }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Object getDate() { return date; }
+    public void setDate(Object date) { this.date = date; }
 
+    public Object getStartTime() { return startTime; }
+    public void setStartTime(Object startTime) { this.startTime = startTime; }
+
+    public Object getEndTime() { return endTime; }
+    public void setEndTime(Object endTime) { this.endTime = endTime; }
 }
