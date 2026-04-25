@@ -123,7 +123,7 @@ public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopl
         if (currentFragment instanceof ProjectDetailsFragment) {
             EditTasksInformationFragment dialog = EditTasksInformationFragment.newInstance(taskID);
             dialog.setOnTakEditedListener(() -> {
-                ((ProjectDetailsFragment) currentFragment).getTaskList();
+                ((ProjectDetailsFragment) currentFragment).loadProjectAndTasks();
             });
             dialog.show(getSupportFragmentManager(), "EditTaskDialog");
         }
@@ -145,7 +145,7 @@ public class HomeActivity extends AppCompatActivity implements OnGoToInvitePeopl
                                 .delete()
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(this, "Task deleted successfully", Toast.LENGTH_SHORT).show();
-                                    detailsFragment.getTaskList();
+                                    detailsFragment.loadProjectAndTasks();
                                 })
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(this, "Error deleting task: " + e.getMessage(), Toast.LENGTH_SHORT).show();

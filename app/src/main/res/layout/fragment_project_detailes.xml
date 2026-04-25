@@ -1,90 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
+    <!-- Header -->
     <LinearLayout
         android:id="@+id/headerLayout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/project_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingHorizontal="10dp"
             android:text="@string/project_name"
             android:textSize="22sp"
-            android:paddingHorizontal="10dp"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/actions_menu"
-            android:contentDescription="@string/actions_menu"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:clickable="true"
+            android:contentDescription="@string/actions_menu"
             android:focusable="true"
             android:src="@android:drawable/ic_menu_more" />
 
     </LinearLayout>
 
-
+    <!-- Description -->
     <TextView
         android:id="@+id/project_description"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/project_description_massage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginHorizontal="20dp"
-        android:maxLines="3"
         android:ellipsize="end"
-        android:textAlignment="textStart"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="8dp"
+        android:maxLines="3"
+        android:text="@string/project_description_massage"
+        android:textAlignment="textStart" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tasksRecycler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:padding="8dp"
-        android:visibility="visible"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/project_description"
-        tools:listitem="@layout/item_task" />
-
+    <!-- Progress -->
     <ProgressBar
         android:id="@+id/progressLoaderPD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
+    <!-- Empty state -->
     <TextView
         android:id="@+id/emptyStatePD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"
+        android:layout_gravity="center"
         android:text="@string/no_tasks_found"
-        />
+        android:visibility="gone" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Tasks list — layout_weight="1" makes it fill remaining space -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tasksRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        tools:listitem="@layout/item_task" />
+
+</LinearLayout>
